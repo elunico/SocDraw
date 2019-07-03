@@ -1,0 +1,47 @@
+<html>
+
+<head>
+
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    var socket = io('http://localhost:8000');
+    var id;
+    socket.on('connected', function (data) {
+      console.log("Connected! id=" + data.id);
+      id = data.id;
+    });
+    socket.on('nack', function (data) {
+      console.log('Error server got bad data');
+    });
+    socket.on('incoming drawing', function (data) {
+      if (data.source != id) {
+        console.log('Got data');
+        drawIncomingData(data);
+      }
+    })
+  </script>
+  <script src="/libraries/p5.js"></script>
+  <script src="/libraries/p5.dom.js"></script>
+  <script src="/sketch.js"></script>
+
+</head>
+
+<body>
+  <script>
+    document.onloadend = function () {
+      document.body.addEventListener("touchstart", function (e) {
+        e.preventDefault();
+      }, false);
+      document.body.addEventListener("touchend", function (e) {
+        e.preventDefault();
+      }, false);
+      document.body.addEventListener("touchmove", function (e) {
+        e.preventDefault();
+      }, false);
+    }
+  </script>
+</body>
+
+</html>
