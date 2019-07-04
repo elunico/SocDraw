@@ -1,12 +1,9 @@
 <html>
 
 <head>
-
-
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    var socket = io('http://localhost:8000');
+    var socket = io('http://192.168.1.169:8000');
     var id;
     socket.on('connected', function (data) {
       console.log("Connected! id=" + data.id);
@@ -20,27 +17,41 @@
         console.log('Got data');
         drawIncomingData(data);
       }
-    })
+    });
+    socket.on('clear canvas', function (data) {
+      console.log('received clear');
+      clearCanvas();
+    });
+    socket.on('mouse released', function (data) { last = { x: undefined, y: undefined }; });
   </script>
   <script src="/libraries/p5.js"></script>
   <script src="/libraries/p5.dom.js"></script>
   <script src="/sketch.js"></script>
 
+  <style>
+    body>* {
+      margin: 4px;
+    }
+  </style>
+
 </head>
 
 <body>
   <script>
-    document.onloadend = function () {
-      document.body.addEventListener("touchstart", function (e) {
-        e.preventDefault();
-      }, false);
-      document.body.addEventListener("touchend", function (e) {
-        e.preventDefault();
-      }, false);
-      document.body.addEventListener("touchmove", function (e) {
-        e.preventDefault();
-      }, false);
-    }
+    (function () {
+      window.addEventListener("touchstart", function (e) {
+        if (e.target == canvas.elt)
+          e.preventDefault();
+      }, { passive: false });
+      window.addEventListener("touchend", function (e) {
+        if (e.target == canvas.elt)
+          e.preventDefault();
+      }, { passive: false });
+      window.addEventListener("touchmove", function (e) {
+        if (e.target == canvas.elt)
+          e.preventDefault();
+      }, { passive: false });
+    })();
   </script>
 </body>
 

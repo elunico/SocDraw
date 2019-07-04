@@ -22,4 +22,11 @@ io.on('connection', function (socket) {
     socket.emit('ack', { success: true });
     io.emit('incoming drawing', data);
   });
+  socket.on('mouse released', function (data) {
+    io.emit('mouse released', {});
+  });
+  socket.on('clear canvas', function (data) {
+    console.log('socket said clear; io sending clear');
+    io.emit('clear canvas', {});
+  });
 });
