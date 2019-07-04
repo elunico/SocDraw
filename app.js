@@ -36,12 +36,17 @@ function handler(req, res) {
   });
 }
 
+String.prototype.trimAddress = function () {
+  if (this.startsWith('::ffff:')) {
+    return this.substring(7);
+  }
+  return this;
+}
 
-let id = 1;
 
 io.on('connection', function (socket) {
-  console.log("[+] Connecting to client at " + socket.handshake.address);
-  socket.emit('connected', { id: id++ });
+  console.log(`[+] Connecting to client ${socket.id} at ${socket.handshake.address.trimAddress()}`);
+  socket.emit('connected', { id: socket.id });
   socket.on('mouse pressed event', function (data) {
     socket.emit('ack', { success: true });
     io.emit('incoming drawing', data);
@@ -53,10 +58,10 @@ io.on('connection', function (socket) {
     io.emit('clear canvas', {});
   });
   socket.on('disconnect', function (data) {
-    console.log('[-] Client disconnecting ' + socket.handshake.address);
+    console.log(`[-] Client ${socket.id} disconnecting from ${socket.handshake.address.trimAddress()}`);
   })
 });
 
 io.on('disconnect', function (socket) {
-  console.log('[-] Disconnected from client ' + socket.handleshake.address);
+  console.log(`[-] Disconnected from client ${socket.handleshake.address}`);
 });
