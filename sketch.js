@@ -113,11 +113,14 @@ function mousePressed(event) {
 function drawIncomingData(data) {
   let old = color;
   let path = data.path;
+  let oldWidth = lineWidth;
+  lineWidth = data.width;
   color = data.color;
   fill(...color);
   let p = drawData(path);
   path = p;
   color = old;
+  lineWidth = oldWidth;
   fill(...color);
 }
 
@@ -154,7 +157,8 @@ function mouseDragged(event) {
   socket.emit('mouse pressed event', {
     source: id,
     path: path,
-    color: color
+    color: color,
+    width: lineWidth
   });
   path.last.x = last.lastX;
   path.last.y = last.lastY;
@@ -170,7 +174,7 @@ function touchEnd(event) {
   socket.emit('mouse released', {});
 }
 
-function coordinatesFromTouchEvent(e) {
+function eventFromTouchEvent(e) {
   let touch = e.targetTouches[0];
   if (!touch.target) {
     return;
@@ -183,9 +187,9 @@ function coordinatesFromTouchEvent(e) {
 }
 
 function touchStart(e) {
-  mousePressed(coordinatesFromTouchEvent(e));
+  mousePressed(eventFromTouchEvent(e));
 }
 
 function touchMoved(e) {
-  mouseDragged(coordinatesFromTouchEvent(e));
+  mouseDragged(eventFromTouchEvent(e));
 }
