@@ -2,6 +2,8 @@ let redButton;
 let blueButton;
 let greenButton;
 let yellowButton;
+let orangeButton;
+let purpleButton;
 let blackButton;
 let eraserButton;
 let sizeSlider;
@@ -26,9 +28,11 @@ function setup() {
   background(255);
   createP('');
   redButton = createButton("Red");
+  orangeButton = createButton("Orange");
+  yellowButton = createButton("Yellow");
   greenButton = createButton("Green");
   blueButton = createButton("Blue");
-  yellowButton = createButton("Yellow");
+  purpleButton = createButton("Purple");
   blackButton = createButton("Black");
   eraserButton = createButton("Eraser");
   redButton.style('width', '70px');
@@ -63,6 +67,16 @@ function setup() {
   yellowButton.mousePressed(() => {
     currentColor = 'yellow';
     color = [255, 255, 0];
+    fill(...color);
+  });
+  purpleButton.mousePressed(() => {
+    currentColor = 'purple';
+    color = [255, 0, 255];
+    fill(...color);
+  });
+  orangeButton.mousePressed(() => {
+    currentColor = 'orange';
+    color = [255, 145, 2];
     fill(...color);
   });
   blackButton.mousePressed(() => {
