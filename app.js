@@ -112,6 +112,7 @@ function socketJoinRoom(socket, roomName) {
   });
   socket.on('clear canvas', function (data) {
     io.to(roomName).emit('clear canvas', {});
+    previousData[roomName] = [];
   });
   socket.on('disconnect', function (data) {
     console.log(`[-] Client ${socket.id} disconnecting from ${socket.handshake.address.trimAddress()}`);

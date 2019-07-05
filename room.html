@@ -4,6 +4,7 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
     var socket = io('https://socdraw.herokuapp.com/');
+    // var socket = io('http://192.168.56.1:8000/');
     var id;
     socket.on('connected', function (data) {
       console.log("Connected! id=" + data.id);
