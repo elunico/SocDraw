@@ -111,7 +111,7 @@ function mousePressed(event) {
 }
 
 function drawIncomingData(data) {
-  let old = color;
+  let oldColor = color;
   let path = data.path;
   let oldWidth = lineWidth;
   lineWidth = data.width;
@@ -119,7 +119,7 @@ function drawIncomingData(data) {
   fill(...color);
   let p = drawData(path);
   path = p;
-  color = old;
+  color = oldColor;
   lineWidth = oldWidth;
   fill(...color);
 }
@@ -154,12 +154,13 @@ function mouseDragged(event) {
   path.y = event.y + (window.scrollY ? window.scrollY - 10 : -10);
 
   let last = drawData(path);
-  socket.emit('mouse pressed event', {
+  let mouseData = {
     source: id,
     path: path,
     color: color,
     width: lineWidth
-  });
+  };
+  socket.emit('mouse pressed event', mouseData);
   path.last.x = last.lastX;
   path.last.y = last.lastY;
 }
