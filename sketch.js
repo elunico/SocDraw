@@ -12,15 +12,7 @@ let canvas;
 let path;
 let currentColor = 'black';
 
-class Path {
-  constructor(x, y, lastX, lastY) {
-    this.x = x;
-    this.y = y;
-    this.last = {};
-    this.last.x = lastX;
-    this.last.y = lastY;
-  }
-}
+
 
 path = new Path();
 let lineWidth = 10;
@@ -147,12 +139,18 @@ function drawData(path) {
   return { lastX: x, lastY: y };
 }
 
+const OFFSET = 0;
+
 function mouseDragged(event) {
   if (event.target != canvas.elt) {
     return;
   }
-  path.x = event.x + (window.scrollX ? window.scrollX - 10 : -10);
-  path.y = event.y + (window.scrollY ? window.scrollY - 10 : -10);
+
+  let canvasOffsetTop = canvas.elt.offsetTop;
+  let canvasOffsetLeft = canvas.elt.offsetLeft;
+
+  path.x = event.x - canvasOffsetLeft + (window.scrollX ? window.scrollX - OFFSET : -OFFSET);
+  path.y = event.y - canvasOffsetTop + (window.scrollY ? window.scrollY - OFFSET : -OFFSET);
 
   let last = drawData(path);
   let mouseData = {
