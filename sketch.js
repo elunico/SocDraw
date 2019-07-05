@@ -57,7 +57,7 @@ function setup() {
 
   saveButton.mousePressed(() => {
     let url = canvas.elt.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    window.location.href = url;
+    window.open(url, '_blank');
   });
 
   redButton.mousePressed(() => {
