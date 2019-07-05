@@ -1,6 +1,6 @@
-var app = require('http').createServer(handler)
-var io = require('socket.io')(app);
-var fs = require('fs');
+const app = require('http').createServer(handler)
+const io = require('socket.io')(app);
+const fs = require('fs');
 const os = require('os');
 const dns = require('dns');
 
@@ -13,18 +13,23 @@ async function getLocalIP() {
         resolve(add);
       }
     });
-  })
+  });
 }
 
+String.prototype.trimAddress = function () {
+  if (this.startsWith('::ffff:')) {
+    return this.substring(7);
+  }
+  return this;
+}
 
 const PORT = 8000;
 app.listen(PORT);
-getLocalIP().then((address) => {
+
+(async function() {
+  let address = await getLocalIP();
   console.log(`[+] Hosting server on ${address}:${PORT}`);
-}).catch((err) => {
-  console.error(err);
-  throw err;
-});
+})();
 
 function handler(req, res) {
   let p = __dirname + req.url;
@@ -34,13 +39,6 @@ function handler(req, res) {
   fs.readFile(p, function (err, data) {
     res.end(data);
   });
-}
-
-String.prototype.trimAddress = function () {
-  if (this.startsWith('::ffff:')) {
-    return this.substring(7);
-  }
-  return this;
 }
 
 let previousData = [];
