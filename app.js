@@ -43,13 +43,17 @@ String.prototype.trimAddress = function () {
   return this;
 }
 
+let previousData = [];
 
 io.on('connection', function (socket) {
   console.log(`[+] Connecting to client ${socket.id} at ${socket.handshake.address.trimAddress()}`);
-  socket.emit('connected', { id: socket.id });
   socket.on('mouse pressed event', function (data) {
     socket.emit('ack', { success: true });
+    previousData.push(data);
     io.emit('incoming drawing', data);
+  });
+  socket.on('setup done', function (data) {
+    socket.emit('previous data', { previousData: previousData });
   });
   socket.on('mouse released', function (data) {
     io.emit('mouse released', {});
@@ -60,6 +64,7 @@ io.on('connection', function (socket) {
   socket.on('disconnect', function (data) {
     console.log(`[-] Client ${socket.id} disconnecting from ${socket.handshake.address.trimAddress()}`);
   })
+  socket.emit('connected', { id: socket.id, previousData: previousData });
 });
 
 io.on('disconnect', function (socket) {

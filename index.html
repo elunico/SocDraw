@@ -9,6 +9,11 @@
       console.log("Connected! id=" + data.id);
       id = data.id;
     });
+    socket.on('previous data', function (data) {
+      for (let d of data.previousData) {
+        drawIncomingData(d);
+      }
+    })
     socket.on('nack', function (data) {
       console.log('Error server got bad data');
     });

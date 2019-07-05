@@ -92,6 +92,7 @@ function setup() {
   });
   noStroke();
   fill(0);
+  socket.emit('setup done', {});
 }
 
 function draw() {
