@@ -1,0 +1,124 @@
+<html>
+
+<head>
+
+  <style>
+    body>* {
+      /* margin: 4px; */
+      margin: 2% 17% 2% 17%;
+
+    }
+
+    .instructions {
+      font-size: 1.2em;
+    }
+
+    .big-or {
+      font-size: 2em;
+      font-weight: 800;
+    }
+
+    .main-table {
+      text-align: center;
+      vertical-align: middle;
+      margin-left: 17%;
+      margin-right: 17%;
+    }
+
+    .btn {
+      font-size: 1.2em;
+      background-color: seagreen;
+      color: white;
+      width: 275px;
+      height: 75px;
+      margin-left: 2%;
+      text-align: center;
+      align-content: center;
+      border-radius: 25px;
+      transition: transform 75ms ease-in-out, background-color 75ms linear;
+    }
+
+    .btn:hover {
+      transform: scale(0.97);
+      background-color: darkgreen;
+    }
+
+    .room-input {
+      width: 100%;
+      margin-bottom: 10px;
+      transition: transform 100ms linear;
+    }
+  </style>
+  <script>
+
+    function newRoom() {
+      window.location = '/room/new';
+    }
+
+    function goToRoom() {
+      let roomBox = document.querySelector('#room-box');
+      let room = roomBox.value;
+
+      let roomName = room.trim().toLowerCase();//.split(' ').join('-');
+      if (roomName.indexOf(' ') >= 0) {
+        roomName = roomName.replace(/ /g, '-');
+      }
+
+      if (roomName.length > 0) {
+        window.location = `/room/in/${roomName}`;
+      } else {
+        roomBox.style['transform'] = 'scale(1.1) rotate(5deg)';
+        setTimeout(() => { roomBox.style['transform'] = 'scale(1.1) rotate(-5deg)' }, 100);
+        setTimeout(() => { roomBox.style['transform'] = '' }, 300);
+      }
+    }
+
+
+  </script>
+
+</head>
+
+<body>
+  <h1>
+    Welcome to Draw!
+  </h1>
+  <p class="instructions">
+    You can click "Create New Room" to create a new room. This will allow
+    you to draw on a canvas. You can tell someone else about your room name
+    (including the dashes!) and they can join your room using the
+    "Join Room" button. This will allow you and them to share the canvas.
+  </p>
+  <p class="instructions">
+    If you already have the code to a room. Enter it in the box exactly
+    as it appears on the other person's machine including the dashes and
+    press "Join Room".
+  </p>
+
+  <table class="main-table" cellspacing="10">
+    <!-- <tr> -->
+    <tr>
+      <td>
+        <div class="btn" onclick="newRoom()">
+          <span>Create New Room</span>
+          <!-- <input onclick="newRoom()" type="button" value="Create New Room"> -->
+        </div>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <span class="big-or">OR</span>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <input class="room-input" type="text" id="room-box" placeholder="Room Name">
+        <div class="btn" onclick="goToRoom()">
+          Join Room
+        </div>
+      </td>
+    </tr>
+    <!-- </tr> -->
+  </table>
+</body>
+
+</html>
