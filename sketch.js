@@ -41,6 +41,8 @@ function setup() {
   yellowButton.style('width', '70px');
   blackButton.style('width', '70px');
   eraserButton.style('width', '70px');
+  purpleButton.style('width', '70px');
+  orangeButton.style('width', '70px');
   colorSpan = createSpan('');
   createP('');
   createSpan('Line Size: ');
