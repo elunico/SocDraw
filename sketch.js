@@ -11,6 +11,7 @@ let clearButton;
 let sizeSpan;
 let colorSpan;
 let canvas;
+let saveButton;
 let path;
 let currentColor = 'black';
 
@@ -47,9 +48,17 @@ function setup() {
   createP('');
   createSpan('Line Size: ');
   sizeSlider = createSlider(1, 50, 10, 1);
+  sizeSlider.style('width', '250');
   sizeSpan = createSpan('');
   createP('');
+  saveButton = createButton('Save Canvas');
+  createP('');
   clearButton = createButton('Clear Canvas');
+
+  saveButton.mousePressed(() => {
+    let url = canvas.elt.toDataURL("image/png").replace("image/png", "image/octet-stream");
+    window.location.href = url;
+  });
 
   redButton.mousePressed(() => {
     currentColor = 'red';
