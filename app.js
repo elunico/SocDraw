@@ -26,7 +26,7 @@ String.prototype.trimAddress = function () {
   return this;
 }
 
-const PORT = 8000;
+const PORT = process.env.PORT || 8000;
 server.listen(PORT);
 app.use(express.static('public'));
 

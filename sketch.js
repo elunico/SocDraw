@@ -12,8 +12,6 @@ let canvas;
 let path;
 let currentColor = 'black';
 
-
-
 path = new Path();
 let lineWidth = 10;
 
