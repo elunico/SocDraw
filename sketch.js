@@ -50,7 +50,7 @@ function setup() {
   colorSpan = createSpan('');
   createP('');
   createSpan('Line Size: ');
-  sizeSlider = createSlider(1, 50, 10, 1);
+  sizeSlider = createSlider(1, 100, 10, 1);
   sizeSlider.style('width', '250');
   sizeSpan = createSpan('');
   createP('');
@@ -85,7 +85,7 @@ function setup() {
   });
   indigoButton.mousePressed(() => {
     currentColor = 'indigo';
-    color = [75, 0, 30];
+    color = [75, 0, 130];
     fill(...color);
   });
   purpleButton.mousePressed(() => {
@@ -207,9 +207,6 @@ function touchEnd(event) {
 
 function eventFromTouchEvent(e) {
   let touch = e.targetTouches[0];
-  if (!touch.target) {
-    return;
-  }
   let x = touch.clientX;
   let y = touch.clientY;
   return {

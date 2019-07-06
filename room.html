@@ -23,6 +23,9 @@
         drawIncomingData(data);
       }
     });
+    socket.on('room removed', function (data) {
+      window.location = '/error.html';
+    });
     socket.on('clear canvas', function (data) {
       console.log('received clear');
       clearCanvas();

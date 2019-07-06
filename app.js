@@ -86,7 +86,11 @@ io.on('connection', (socket) => {
   socket.on('needs assignment', function (data) {
     socketJoinRoom(socket, data.room);
     socket.sd_roomName = data.room;
-    rooms[data.room].addClient(socket.id);
+    if (rooms[data.room]) {
+      rooms[data.room].addClient(socket.id);
+    } else {
+      socket.emit('room removed', {});
+    }
   });
   socket.emit('connected', { id: socket.id });
   console.log(`[*] There are ${Object.keys(rooms).length} rooms in use`);
