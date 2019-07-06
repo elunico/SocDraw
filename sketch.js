@@ -1,3 +1,4 @@
+
 let pinkButton;
 let redButton;
 let blueButton;
@@ -11,10 +12,15 @@ let indigoButton;
 let clearButton;
 let sizeSlider;
 let sizeSpan;
-let colorSpan;
+// let colorSpan;
 let canvas;
+let imageP;
 let saveButton;
+let redSlider;
+let greenSlider;
+let blueSlider;
 let path;
+let imageShowing = false;
 let currentColor = 'black';
 
 path = new Path();
@@ -40,6 +46,21 @@ function setup() {
   purpleButton = createButton("Purple");
   blackButton = createButton("Black");
   eraserButton = createButton("Eraser");
+  createP('');
+  createSpan('Red');
+  redSlider = createSlider(0, 255, 127, 1);
+  createSpan('Green');
+  greenSlider = createSlider(0, 255, 127, 1);
+  createSpan('Blue');
+  blueSlider = createSlider(0, 255, 127, 1);
+  redSlider.style('width', '200px');
+  blueSlider.style('width', '200px');
+  greenSlider.style('width', '200px');
+  customColorP = createP('Color Preview');
+  customColorP.style('margin-left', '5px');
+  customColorP.style('font-size', '1.1em');
+  customColorP.style('line-height', '1.2em');
+  customColorP.style('width', '800px');
   redButton.style('width', '70px');
   pinkButton.style('width', '70px');
   greenButton.style('width', '70px');
@@ -50,7 +71,7 @@ function setup() {
   purpleButton.style('width', '70px');
   indigoButton.style('width', '70px');
   orangeButton.style('width', '70px');
-  colorSpan = createSpan('');
+  // colorSpan = createSpan('');
   createP('');
   createSpan('Line Size: ');
   sizeSlider = createSlider(1, 100, 10, 1);
@@ -58,70 +79,65 @@ function setup() {
   sizeSpan = createSpan('');
   createP('');
   saveButton = createButton('Save Canvas');
-  createP('');
+  imageP = createP('');
   clearButton = createButton('Clear Canvas');
 
   saveButton.mousePressed(() => {
-    let url = canvas.elt.toDataURL("image/png").replace("image/png", "image/octet-stream");
-    window.open(url, '_blank');
+    if (imageShowing) {
+      saveButton.html('Save Image');
+      let place = select('#save-img');
+      place.elt.setAttribute('hidden', 'true');
+      place.elt.src = '';
+      imageP.html('');
+    } else {
+      saveButton.html('Hide Image');
+      let url = canvas.elt.toDataURL("image/png").replace("image/png", "image/octet-stream");
+      imageP.html('The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.')
+      let place = select('#save-img');
+      place.elt.src = url;
+      place.elt.removeAttribute('hidden');
+    }
+    imageShowing = !imageShowing;
   });
 
-  pinkButton.mousePressed(() => {
-    currentColor = 'pink';
-    color = [255, 143, 180];
-    fill(...color);
-  });
-  redButton.mousePressed(() => {
-    currentColor = 'red';
-    color = [255, 0, 0];
-    fill(...color);
-  });
-  blueButton.mousePressed(() => {
-    currentColor = 'blue';
-    color = [0, 0, 255];
-    fill(...color);
-  });
-  greenButton.mousePressed(() => {
-    currentColor = 'green';
-    color = [0, 255, 0];
-    fill(...color);
-  });
-  yellowButton.mousePressed(() => {
-    currentColor = 'yellow';
-    color = [255, 255, 0];
-    fill(...color);
-  });
-  indigoButton.mousePressed(() => {
-    currentColor = 'indigo';
-    color = [75, 0, 130];
-    fill(...color);
-  });
-  purpleButton.mousePressed(() => {
-    currentColor = 'purple';
-    color = [255, 0, 255];
-    fill(...color);
-  });
-  orangeButton.mousePressed(() => {
-    currentColor = 'orange';
-    color = [252, 121, 13];
-    fill(...color);
-  });
-  blackButton.mousePressed(() => {
-    currentColor = 'black';
-    color = [0, 0, 0];
-    fill(...color);
-  });
-  eraserButton.mousePressed(() => {
-    currentColor = 'eraser';
-    color = [255, 255, 255];
-    fill(...color);
-  });
+  function colorChanger(colorName, colorArray) {
+    return () => {
+      currentColor = colorName;
+      color = colorArray;
+      fill(...color);
+      stroke(...color);
+      redSlider.value(color[0]);
+      greenSlider.value(color[1]);
+      blueSlider.value(color[2]);
+      customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
+    }
+  }
+
+  pinkButton.mousePressed(colorChanger('pink', [255, 143, 180]));
+  redButton.mousePressed(colorChanger('red', [255, 0, 0]));
+  blueButton.mousePressed(colorChanger('blue', [0, 0, 255]));
+  greenButton.mousePressed(colorChanger('green', [0, 255, 0]));
+  yellowButton.mousePressed(colorChanger('yellow', [255, 255, 0]));
+  indigoButton.mousePressed(colorChanger('indigo', [75, 0, 130]));
+  purpleButton.mousePressed(colorChanger('purple', [255, 0, 255]));
+  orangeButton.mousePressed(colorChanger('orange', [252, 121, 13]));
+  blackButton.mousePressed(colorChanger('black', [0, 0, 0]));
+  eraserButton.mousePressed(colorChanger('eraser', [255, 255, 255]));
   clearButton.mousePressed(() => {
     clearCanvas();
     console.log('socket saying clear');
     socket.emit('clear canvas', {});
   });
-  noStroke();
+  redSlider.input(() => {
+    currentColor = '&lt;custom&gt;';
+  });
+  blueSlider.input(() => {
+    currentColor = '&lt;custom&gt;';
+  });
+  greenSlider.input(() => {
+    currentColor = '&lt;custom&gt;';
+  });
+  strokeWeight(0);
   fill(0);
   socket.emit('setup done', {});
 }
@@ -129,7 +145,16 @@ function setup() {
 function draw() {
   lineWidth = sizeSlider.value();
   sizeSpan.html(lineWidth);
-  colorSpan.html(currentColor);
+  // colorSpan.html(currentColor);
+  if (currentColor === '&lt;custom&gt;') {
+    let red = redSlider.value();
+    let green = greenSlider.value();
+    let blue = blueSlider.value();
+    color = [red, green, blue];
+    customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
+    fill(...color);
+    stroke(...color);
+  }
 }
 
 let last = { x: undefined, y: undefined };
@@ -167,7 +192,6 @@ function drawData(path) {
   let py = path.last.y;
 
   if (px && py && distance(x, y, px, py) > lineWidth / 2) {
-    stroke(...color);
     strokeWeight(lineWidth);
     line(x, y, px, py);
     strokeWeight(0);
