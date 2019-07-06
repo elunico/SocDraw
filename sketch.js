@@ -88,7 +88,7 @@ function setup() {
     color = [75, 0, 30];
     fill(...color);
   });
-  purple.mousePressed(() => {
+  purpleButton.mousePressed(() => {
     currentColor = 'purple';
     color = [255, 0, 255];
     fill(...color);
