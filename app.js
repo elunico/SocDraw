@@ -89,6 +89,7 @@ io.on('connection', (socket) => {
     rooms[data.room].addClient(socket.id);
   });
   socket.emit('connected', { id: socket.id });
+  console.log(`[*] There are ${Object.keys(rooms).length} rooms in use`);
 });
 io.on('disconnect', function (socket) {
   console.log(`[-] Disconnected from client ${socket.handleshake.address}`);
@@ -118,12 +119,12 @@ function socketJoinRoom(socket, roomName) {
     console.log(`[-] Client ${socket.id} disconnecting from ${socket.handshake.address.trimAddress()}`);
     let room = rooms[socket.sd_roomName];
     if (room) {
-      console.log(`Removing client ${socket.id} from room ${room.name}`);
+      console.log(`[-] Removing client ${socket.id} from room ${room.name}`);
       room.removeClient(socket.id);
-      // TODO: why is room never cleared
       if (room.isEmpty()) {
-        console.log(`Removing room ${room.name} because it is empty`);
+        console.log(`[-] Removing room ${room.name} because it is empty`);
         delete rooms[socket.sd_roomName];
+        delete previousData[socket.sd_roomName];
       }
     }
   })

@@ -20,7 +20,6 @@
     });
     socket.on('incoming drawing', function (data) {
       if (data.source != id) {
-        console.log('Got data');
         drawIncomingData(data);
       }
     });
