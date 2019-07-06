@@ -6,8 +6,9 @@ let orangeButton;
 let purpleButton;
 let blackButton;
 let eraserButton;
-let sizeSlider;
+let indigoButton;
 let clearButton;
+let sizeSlider;
 let sizeSpan;
 let colorSpan;
 let canvas;
@@ -33,6 +34,7 @@ function setup() {
   yellowButton = createButton("Yellow");
   greenButton = createButton("Green");
   blueButton = createButton("Blue");
+  indigoButton = createButton("Indigo");
   purpleButton = createButton("Purple");
   blackButton = createButton("Black");
   eraserButton = createButton("Eraser");
@@ -43,6 +45,7 @@ function setup() {
   blackButton.style('width', '70px');
   eraserButton.style('width', '70px');
   purpleButton.style('width', '70px');
+  indigoButton.style('width', '70px');
   orangeButton.style('width', '70px');
   colorSpan = createSpan('');
   createP('');
@@ -80,14 +83,19 @@ function setup() {
     color = [255, 255, 0];
     fill(...color);
   });
-  purpleButton.mousePressed(() => {
+  indigo.mousePressed(() => {
+    currentColor = 'indigo';
+    color = [75, 0, 30];
+    fill(...color);
+  });
+  purple.mousePressed(() => {
     currentColor = 'purple';
     color = [255, 0, 255];
     fill(...color);
   });
   orangeButton.mousePressed(() => {
     currentColor = 'orange';
-    color = [255, 145, 2];
+    color = [214, 101, 8];
     fill(...color);
   });
   blackButton.mousePressed(() => {
