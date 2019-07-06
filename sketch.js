@@ -1,3 +1,4 @@
+let pinkButton;
 let redButton;
 let blueButton;
 let greenButton;
@@ -29,6 +30,7 @@ function setup() {
 
   background(255);
   createP('');
+  pinkButton = createButton("Pink");
   redButton = createButton("Red");
   orangeButton = createButton("Orange");
   yellowButton = createButton("Yellow");
@@ -39,6 +41,7 @@ function setup() {
   blackButton = createButton("Black");
   eraserButton = createButton("Eraser");
   redButton.style('width', '70px');
+  pinkButton.style('width', '70px');
   greenButton.style('width', '70px');
   blueButton.style('width', '70px');
   yellowButton.style('width', '70px');
@@ -63,6 +66,11 @@ function setup() {
     window.open(url, '_blank');
   });
 
+  pinkButton.mousePressed(() => {
+    currentColor = 'pink';
+    color = [255, 143, 180];
+    fill(...color);
+  });
   redButton.mousePressed(() => {
     currentColor = 'red';
     color = [255, 0, 0];
@@ -95,7 +103,7 @@ function setup() {
   });
   orangeButton.mousePressed(() => {
     currentColor = 'orange';
-    color = [214, 101, 8];
+    color = [252, 121, 13];
     fill(...color);
   });
   blackButton.mousePressed(() => {
