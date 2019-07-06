@@ -83,7 +83,7 @@ function setup() {
     color = [255, 255, 0];
     fill(...color);
   });
-  indigo.mousePressed(() => {
+  indigoButton.mousePressed(() => {
     currentColor = 'indigo';
     color = [75, 0, 30];
     fill(...color);
