@@ -7,6 +7,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const Room = require('./room.js');
 
+const ROOM_KEEP_SECONDS = process.env.ROOM_KEEP_SECONDS || 15;
+
 async function getLocalIP() {
   return new Promise((resolve, reject) => {
     dns.lookup(os.hostname(), function (err, add, fam) {
@@ -84,10 +86,15 @@ app.get('/room/in/:w1', function (req, res) {
 io.on('connection', (socket) => {
   console.log(`[+] Connecting to client ${socket.id} at ${socket.handshake.address.trimAddress()}`);
   socket.on('needs assignment', function (data) {
-    socketJoinRoom(socket, data.room);
-    socket.sd_roomName = data.room;
     if (rooms[data.room]) {
+      socketJoinRoom(socket, data.room);
+      socket.sd_roomName = data.room;
+      if (rooms[data.room].willBeDeleted()) {
+        rooms[data.room].cancelDeletion();
+        console.log(`[+] Room ${data.room} is no longer scheduled for deletion because someone connected to it`);
+      }
       rooms[data.room].addClient(socket.id);
+      console.log(`[*] Room ${data.room} now has ${rooms[data.room].numClients()} members`);
     } else {
       socket.emit('room removed', {});
     }
@@ -97,7 +104,6 @@ io.on('connection', (socket) => {
 });
 io.on('disconnect', function (socket) {
   console.log(`[-] Disconnected from client ${socket.handleshake.address}`);
-
 });
 
 
@@ -125,10 +131,15 @@ function socketJoinRoom(socket, roomName) {
     if (room) {
       console.log(`[-] Removing client ${socket.id} from room ${room.name}`);
       room.removeClient(socket.id);
+      console.log(`[*] Room ${room.name} now has ${room.numClients()} members`);
       if (room.isEmpty()) {
-        console.log(`[-] Removing room ${room.name} because it is empty`);
-        delete rooms[socket.sd_roomName];
-        delete previousData[socket.sd_roomName];
+        console.log(`[-] Room ${room.name} is empty. Room and all data will be destroyed in ~${ROOM_KEEP_SECONDS} seconds unless someone connects to it`);
+        room.deleteTimer = setTimeout(() => {
+          console.log(`[-] Removing room ${room.name} because it has been empty for ~${ROOM_KEEP_SECONDS} seconds`);
+          delete rooms[socket.sd_roomName];
+          delete previousData[socket.sd_roomName];
+          console.log(`[*] There are now ${Object.keys(rooms).length} rooms in use`);
+        }, 1000 * ROOM_KEEP_SECONDS);
       }
     }
   })

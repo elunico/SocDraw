@@ -1,6 +1,21 @@
 class Room {
   constructor(name) {
-    this.name = name; this.clients = [];
+    this.name = name;
+    this.clients = [];
+    this.deleteTimer = null;
+  }
+
+  willBeDeleted() {
+    return this.deleteTimer != null;
+  }
+
+  cancelDeletion() {
+    clearTimeout(this.deleteTimer);
+    this.deleteTimer = null;
+  }
+
+  numClients() {
+    return this.clients.length;
   }
 
   addClient(clientId) {
