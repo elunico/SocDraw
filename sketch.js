@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+/* eslint-disable no-undef */
 
 let pinkButton;
 let redButton;
@@ -28,6 +30,7 @@ let lineWidth = 10;
 
 let color = [0, 0, 0];
 
+// eslint-disable-next-line no-unused-vars
 function setup() {
   canvas = createCanvas(800, 600);
   canvas.style('border-style', 'solid');
@@ -36,16 +39,16 @@ function setup() {
 
   background(255);
   createP('');
-  pinkButton = createButton("Pink");
-  redButton = createButton("Red");
-  orangeButton = createButton("Orange");
-  yellowButton = createButton("Yellow");
-  greenButton = createButton("Green");
-  blueButton = createButton("Blue");
-  indigoButton = createButton("Indigo");
-  purpleButton = createButton("Purple");
-  blackButton = createButton("Black");
-  eraserButton = createButton("Eraser");
+  pinkButton = createButton('Pink');
+  redButton = createButton('Red');
+  orangeButton = createButton('Orange');
+  yellowButton = createButton('Yellow');
+  greenButton = createButton('Green');
+  blueButton = createButton('Blue');
+  indigoButton = createButton('Indigo');
+  purpleButton = createButton('Purple');
+  blackButton = createButton('Black');
+  eraserButton = createButton('Eraser');
   createP('');
   createSpan('Red');
   redSlider = createSlider(0, 255, 127, 1);
@@ -91,8 +94,8 @@ function setup() {
       imageP.html('');
     } else {
       saveButton.html('Hide Image');
-      let url = canvas.elt.toDataURL("image/png").replace("image/png", "image/octet-stream");
-      imageP.html('The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.')
+      let url = canvas.elt.toDataURL('image/png').replace('image/png', 'image/octet-stream');
+      imageP.html('The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.');
       let place = select('#save-img');
       place.elt.src = url;
       place.elt.removeAttribute('hidden');
@@ -109,8 +112,8 @@ function setup() {
       redSlider.value(color[0]);
       greenSlider.value(color[1]);
       blueSlider.value(color[2]);
-      customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
-    }
+      customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+    };
   }
 
   pinkButton.mousePressed(colorChanger('pink', [255, 143, 180]));
@@ -142,6 +145,7 @@ function setup() {
   socket.emit('setup done', {});
 }
 
+// eslint-disable-next-line no-unused-vars
 function draw() {
   lineWidth = sizeSlider.value();
   sizeSpan.html(lineWidth);
@@ -151,7 +155,7 @@ function draw() {
     let green = greenSlider.value();
     let blue = blueSlider.value();
     color = [red, green, blue];
-    customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`)
+    customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
     fill(...color);
     stroke(...color);
   }
@@ -167,6 +171,7 @@ function mousePressed(event) {
   mouseDragged(event);
 }
 
+// eslint-disable-next-line no-unused-vars
 function drawIncomingData(data) {
   let oldColor = color;
   let path = data.path;
@@ -174,11 +179,13 @@ function drawIncomingData(data) {
   lineWidth = data.width;
   color = data.color;
   fill(...color);
+  stroke(...color);
   let p = drawData(path);
   path = p;
   color = oldColor;
   lineWidth = oldWidth;
   fill(...color);
+  stroke(...color);
 }
 
 function clearCanvas() {
@@ -186,8 +193,8 @@ function clearCanvas() {
 }
 
 function drawData(path) {
-  let x = path.x // - 6;
-  let y = path.y // - 6;
+  let x = path.x; // - 6;
+  let y = path.y; // - 6;
   let px = path.last.x;
   let py = path.last.y;
 
@@ -227,11 +234,13 @@ function mouseDragged(event) {
   path.last.y = last.lastY;
 }
 
+// eslint-disable-next-line no-unused-vars
 function mouseReleased(event) {
   path.last = { x: undefined, y: undefined };
   socket.emit('mouse released', {});
 }
 
+// eslint-disable-next-line no-unused-vars
 function touchEnd(event) {
   path.last = { x: undefined, y: undefined };
   socket.emit('mouse released', {});
@@ -246,10 +255,12 @@ function eventFromTouchEvent(e) {
   };
 }
 
+// eslint-disable-next-line no-unused-vars
 function touchStart(e) {
   mousePressed(eventFromTouchEvent(e));
 }
 
+// eslint-disable-next-line no-unused-vars
 function touchMoved(e) {
   mouseDragged(eventFromTouchEvent(e));
 }

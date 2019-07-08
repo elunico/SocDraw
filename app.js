@@ -1,25 +1,11 @@
-const fs = require('fs');
-const os = require('os');
-const dns = require('dns');
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const Room = require('./room.js');
+const utils = require('./utils.js');
 
 const ROOM_KEEP_SECONDS = process.env.ROOM_KEEP_SECONDS || 15;
-
-async function getLocalIP() {
-  return new Promise((resolve, reject) => {
-    dns.lookup(os.hostname(), function (err, add, fam) {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(add);
-      }
-    });
-  });
-}
 
 String.prototype.trimAddress = function () {
   if (this.startsWith('::ffff:')) {
@@ -33,25 +19,12 @@ server.listen(PORT);
 app.use(express.static('public'));
 
 (async function () {
-  let address = await getLocalIP();
+  let address = await utils.getLocalIP();
   console.log(`[+] Hosting server on ${address}:${PORT}`);
 })();
 
-const ROOM_LENGTH = 4;
-
-let words = JSON.parse(fs.readFileSync('words.json')).words;
 let previousData = {};
 let rooms = {};
-
-
-function randomRoomString() {
-  let w = [];
-  for (let i = 0; i < ROOM_LENGTH; i++) {
-    w.push(words[Math.floor(Math.random() * words.length)]);
-  }
-  return w.join('-');
-}
-
 
 app.get('/', function (req, res) {
   res.sendFile(__dirname + '/home.html');
@@ -66,7 +39,7 @@ app.get('/libraries/:anything', function (req, res) {
 });
 
 app.get('/room/new', function (req, res) {
-  let roomName = randomRoomString();
+  let roomName = utils.randomRoomString();
   rooms[roomName] = new Room(roomName);
   res.redirect(`/room/in/${roomName}`);
 });
