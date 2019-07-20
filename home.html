@@ -79,18 +79,26 @@
 
 <body>
   <h1>
-    Welcome to Draw!
+    Welcome to SocDraw!
   </h1>
   <p class="instructions">
-    You can click "Create New Room" to create a new room. This will allow
-    you to draw on a canvas. You can tell someone else about your room name
-    (including the dashes!) and they can join your room using the
-    "Join Room" button. This will allow you and them to share the canvas.
+    SocDraw is a program that allows for real-time collaborative drawing
+    in the browser. From this homepage you can choose to create a new room
+    or join an existing one if you know the name of it. </p>
+  <p class="instructions">
+    A room is just a
+    single shared canvas. Once you create a room, the top of the page
+    will indicate the name of that room. Room names are a random sequence
+    of 4 words. You can share this name with other people who can then
+    connect to and share your canvas by using the Join Room option.
   </p>
   <p class="instructions">
-    If you already have the code to a room. Enter it in the box exactly
-    as it appears on the other person's machine including the dashes and
-    press "Join Room".
+    Note that any time someone connects to a room, the current state of the
+    canvas is transmitted, then all real-time drawing data is sent
+    back and forth between all connected clients. Also note that if all
+    the people in a room leave (i.e. disconnect) there will be a short
+    grace period after which the room and all the associated drawing data
+    will be deleted permanently.
   </p>
 
   <table class="main-table" cellspacing="10">
