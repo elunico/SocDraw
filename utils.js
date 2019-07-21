@@ -17,10 +17,14 @@ async function getLocalIP() {
   });
 }
 
+function random(arr) {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
 function randomRoomString() {
   let w = [];
   for (let i = 0; i < ROOM_LENGTH; i++) {
-    w.push(words[Math.floor(Math.random() * words.length)]);
+    w.push(random(words));
   }
   return w.join('-');
 }

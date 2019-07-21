@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
@@ -16,7 +17,7 @@ String.prototype.trimAddress = function () {
 
 const PORT = process.env.PORT || 8000;
 server.listen(PORT);
-app.use(express.static('public'));
+// app.use(express.static('public'));
 
 (async function () {
   let address = await utils.getLocalIP();
@@ -26,16 +27,32 @@ app.use(express.static('public'));
 let previousData = {};
 let rooms = {};
 
+function notFound(res) {
+  res.status(404).send('<h1>Error 404: Not Found!</h1>');
+}
+
 app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/home.html');
+  res.sendFile(__dirname + '/public/home.html');
 });
 
 app.get('/:anything', function (req, res) {
-  res.sendFile(__dirname + '/' + req.params.anything);
+  try {
+    let a = fs.openSync(__dirname + '/public/' + req.params.anything, 'r');
+    fs.closeSync(a);
+    res.sendFile(__dirname + '/public/' + req.params.anything);
+  } catch (e) {
+    notFound(res);
+  }
 });
 
 app.get('/libraries/:anything', function (req, res) {
-  res.sendFile(__dirname + '/libraries/' + req.params.anything);
+  try {
+    let a = fs.openSync(__dirname + '/public/libraries/' + req.params.anything, 'r');
+    fs.closeSync(a);
+    res.sendFile(__dirname + '/public/libraries/' + req.params.anything);
+  } catch (e) {
+    notFound(res);
+  }
 });
 
 app.get('/room/new', function (req, res) {
@@ -47,12 +64,12 @@ app.get('/room/new', function (req, res) {
 app.get('/room/in/:w1', function (req, res) {
   let room = req.params.w1;
   if (!rooms[room]) {
-    res.status(404).sendFile(__dirname + '/error.html');
+    res.status(404).sendFile(__dirname + '/public/error.html');
   } else {
     if (!previousData[room]) {
       previousData[room] = [];
     }
-    res.sendFile(__dirname + '/room.html');
+    res.sendFile(__dirname + '/public/room.html');
   }
 });
 
