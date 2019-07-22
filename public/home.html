@@ -1,4 +1,4 @@
-<html>
+<html lang="en">
 
 <head>
   <title>Welcome to SocDraw</title>
@@ -46,6 +46,19 @@
       width: 100%;
       margin-bottom: 10px;
       transition: transform 100ms linear;
+    }
+
+    .footer {
+      font-size: 1em;
+    }
+
+    .input-label {
+      font-size: 0.9em;
+    }
+
+    .footer-src:hover {
+      background-color: rgb(220, 220, 220);
+      color: red;
     }
   </style>
   <script>
@@ -117,6 +130,7 @@
     </tr>
     <tr>
       <td>
+        <label class="input-label" for="room-box">Name of Room to Join</label>
         <input class="room-input" type="text" id="room-box" placeholder="Room Name">
         <div class="btn" onclick="goToRoom()">
           Join Room
@@ -125,6 +139,21 @@
     </tr>
     <!-- </tr> -->
   </table>
+  <p>
+
+  </p>
+  <p class="footer">
+    SocDraw uses
+    <a class="footer-src" href="http://p5js.org">p5.js</a>
+    (<a class="footer-src" href="https://github.com/processing/p5.js">source</a>),
+    <a class="footer-src" href="http://socket.io">socket.io</a>
+    (<a class="footer-src" href="https://github.com/socketio/socket.io">source</a>),
+    and
+    <a class="footer-src" href="https://expressjs.com/">express</a>
+    (<a class="footer-src" href="https://github.com/expressjs/express">source</a>).
+    to enable
+    real-time collaborative drawing using HTML5 canvas.
+  </p>
 </body>
 
 </html>
