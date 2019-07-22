@@ -3,7 +3,7 @@ Drawing in P5.js over sockets
 
 SocDraw is a program that uses [p5.js](http://p5js.org) ([source](https://github.com/processing/p5.js)) 
 and [socket.io](http://socket.io) ([source](https://github.com/socketio/socket.io)) to enable 
-real-time collaborative drawing using HTML5 canvas. 
+real-time collaborative drawing using HTML5 canvas. The backend is enabled by [express](https://expressjs.com/) ([source](https://github.com/expressjs/express))
 
 Drawing is based on the idea of a 'room'. A room is a canvas, associated drawing data, and connected clients.
 Rooms are identified by their name which is a string of 4 random (nice) words).
