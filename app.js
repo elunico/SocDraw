@@ -1,12 +1,15 @@
 const fs = require('fs');
+const crypto = require('crypto');
 const express = require('express');
 const app = express();
+app.use(express.urlencoded({ extended: true }));
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const Room = require('./room.js');
 const utils = require('./utils.js');
 
-const ROOM_KEEP_SECONDS = process.env.ROOM_KEEP_SECONDS || 15;
+
+const ROOM_KEEP_SECONDS = Number(process.env.ROOM_KEEP_SECONDS) || 15;
 
 String.prototype.trimAddress = function () {
   if (this.startsWith('::ffff:')) {
@@ -42,6 +45,27 @@ app.get('/:anything', function (req, res) {
     res.sendFile(__dirname + '/public/' + req.params.anything);
   } catch (e) {
     notFound(res);
+  }
+});
+
+app.get('/room/all', function (req, res) {
+  res.write('<html><head><title>All Rooms</title></head><body>');
+  res.write('<h1>All rooms that exist</h1><ol>');
+  for (let roomName of Object.keys(rooms)) {
+    res.write(`<li><a href="/data/${roomName}">${roomName}</a>  `);
+    res.write(`[clients: ${rooms[roomName].numClients()}]</li>`);
+  }
+  res.write('</ol></body></html>');
+  res.end();
+});
+
+app.get('/data/:name', function (req, res) {
+  let room = rooms[req.params.name];
+  if (!room) {
+    notFound(res);
+  } else {
+    let data = previousData[room.name];
+    res.json(data);
   }
 });
 
