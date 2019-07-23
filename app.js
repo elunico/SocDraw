@@ -6,7 +6,7 @@ const io = require('socket.io')(server);
 const Room = require('./room.js');
 const utils = require('./utils.js');
 
-const ROOM_KEEP_SECONDS = process.env.ROOM_KEEP_SECONDS || 15;
+const ROOM_KEEP_SECONDS = Number(process.env.ROOM_KEEP_SECONDS) || 15;
 
 String.prototype.trimAddress = function () {
   if (this.startsWith('::ffff:')) {
