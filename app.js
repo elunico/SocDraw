@@ -103,16 +103,20 @@ function socketJoinRoom(socket, roomName) {
   socket.on('mouse pressed event', function (data) {
     socket.to(roomName).emit('ack', { success: true });
     previousData[roomName].push(data);
-    io.to(roomName).emit('incoming drawing', data);
+    socket.to(roomName).emit('incoming drawing', data);
   });
   socket.on('setup done', function (data) {
     socket.emit('previous data', { previousData: previousData[roomName] });
   });
   socket.on('mouse released', function (data) {
-    io.to(roomName).emit('mouse released', {});
+    socket.to(roomName).emit('mouse released', {});
+  });
+  socket.on('flood fill', function (data) {
+    previousData[roomName].push(data);
+    socket.to(roomName).emit('flood fill', data);
   });
   socket.on('clear canvas', function (data) {
-    io.to(roomName).emit('clear canvas', {});
+    socket.to(roomName).emit('clear canvas', {});
     previousData[roomName] = [];
   });
   socket.on('disconnect', function (data) {

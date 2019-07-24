@@ -14,7 +14,7 @@ let indigoButton;
 let clearButton;
 let sizeSlider;
 let sizeSpan;
-// let colorSpan;
+let fillBox;
 let canvas;
 let imageP;
 let saveButton;
@@ -30,14 +30,7 @@ let lineWidth = 10;
 
 let color = [0, 0, 0];
 
-// eslint-disable-next-line no-unused-vars
-function setup() {
-  canvas = createCanvas(800, 600);
-  canvas.style('border-style', 'solid');
-  canvas.style('border-color', 'black');
-  canvas.style('border-width', '1px');
-
-  background(255);
+function createElements() {
   createP('');
   pinkButton = createButton('Pink');
   redButton = createButton('Red');
@@ -50,16 +43,28 @@ function setup() {
   blackButton = createButton('Black');
   eraserButton = createButton('Eraser');
   createP('');
+  fillBox = createCheckbox('Fill');
   createSpan('Red');
   redSlider = createSlider(0, 255, 127, 1);
   createSpan('Green');
   greenSlider = createSlider(0, 255, 127, 1);
   createSpan('Blue');
   blueSlider = createSlider(0, 255, 127, 1);
+  customColorP = createP('Color Preview');
+  createP('');
+  createSpan('Line Size: ');
+  sizeSlider = createSlider(1, 100, 10, 1);
+  sizeSpan = createSpan('');
+  createP('');
+  saveButton = createButton('Save Canvas');
+  imageP = createP('');
+  clearButton = createButton('Clear Canvas');
+}
+
+function styleElements() {
   redSlider.style('width', '200px');
   blueSlider.style('width', '200px');
   greenSlider.style('width', '200px');
-  customColorP = createP('Color Preview');
   customColorP.style('margin-left', '5px');
   customColorP.style('font-size', '1.1em');
   customColorP.style('line-height', '1.2em');
@@ -74,17 +79,10 @@ function setup() {
   purpleButton.style('width', '70px');
   indigoButton.style('width', '70px');
   orangeButton.style('width', '70px');
-  // colorSpan = createSpan('');
-  createP('');
-  createSpan('Line Size: ');
-  sizeSlider = createSlider(1, 100, 10, 1);
   sizeSlider.style('width', '250');
-  sizeSpan = createSpan('');
-  createP('');
-  saveButton = createButton('Save Canvas');
-  imageP = createP('');
-  clearButton = createButton('Clear Canvas');
+}
 
+function registerHandlers() {
   saveButton.mousePressed(() => {
     if (imageShowing) {
       saveButton.html('Save Image');
@@ -140,6 +138,22 @@ function setup() {
   greenSlider.input(() => {
     currentColor = '&lt;custom&gt;';
   });
+}
+
+// eslint-disable-next-line no-unused-vars
+function setup() {
+  pixelDensity(1);
+  canvas = createCanvas(800, 600);
+  canvas.style('border-style', 'solid');
+  canvas.style('border-color', 'black');
+  canvas.style('border-width', '1px');
+
+  background(255);
+
+  createElements();
+  styleElements();
+  registerHandlers();
+
   strokeWeight(0);
   fill(0);
   socket.emit('setup done', {});
@@ -149,7 +163,6 @@ function setup() {
 function draw() {
   lineWidth = sizeSlider.value();
   sizeSpan.html(lineWidth);
-  // colorSpan.html(currentColor);
   if (currentColor === '&lt;custom&gt;') {
     let red = redSlider.value();
     let green = greenSlider.value();
@@ -161,14 +174,101 @@ function draw() {
   }
 }
 
-let last = { x: undefined, y: undefined };
+function colorsEqual(pix, x, y, color) {
+  let d = pixelDensity();
+  for (let i = 0; i < d; i++) {
+    for (let j = 0; j < d; j++) {
+      let idx = 4 * ((y * d + j) * width * d + (x * d + i));
+      if (pixels[idx] != color[0]) return false;
+      if (pixels[idx + 1] != color[1]) return false;
+      if (pixels[idx + 2] != color[2]) return false;
+      if (pixels[idx + 3] != color[3]) return false;
+    }
+  }
+  return true;
+}
 
-function distance(x1, y1, x2, y2) {
-  return Math.sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
+/**
+ * @param {number} x the x coordinate to start
+ * @param {number} y the y coordinate to start
+ * @param {number[4]} color color that is filling
+ * @param {number[4]} base color that started
+ */
+function floodFill(x, y, color, base) {
+  if (colorsEqual(pixels, x, y, color)) {
+    return;
+  }
+  let stack = [];
+  stack.push({ x, y });
+  while (stack.length != 0) {
+    let coord = stack.pop();
+    let x = coord.x;
+    let y = coord.y;
+    let d = pixelDensity();
+    for (let i = 0; i < d; i++) {
+      for (let j = 0; j < d; j++) {
+        let idx = 4 * ((y * d + j) * width * d + (x * d + i));
+        pixels[idx] = color[0];
+        pixels[idx + 1] = color[1];
+        pixels[idx + 2] = color[2];
+        pixels[idx + 3] = color[3];
+      }
+    }
+
+    if (x < width && colorsEqual(pixels, x + 1, y, base)) {
+      stack.push({ x: x + 1, y: y });
+      // floodFill(x + 1, y, color, base);
+    }
+    if (x >= 0 && colorsEqual(pixels, x - 1, y, base)) {
+      stack.push({ x: x - 1, y: y });
+      // floodFill(x - 1, y, color, base);
+    }
+    if (y < height && colorsEqual(pixels, x, y + 1, base)) {
+      stack.push({ x: x, y: y + 1 });
+      // floodFill(x, y, color, base);
+    }
+    if (y >= 0 && colorsEqual(pixels, x, y - 1, base)) {
+      stack.push({ x: x, y: y - 1 });
+      // floodFill(x, y - 1, color, base);
+    }
+  }
+}
+
+function canvasCoordinates(event) {
+  let canvasOffsetTop = canvas.elt.offsetTop;
+  let canvasOffsetLeft = canvas.elt.offsetLeft;
+  let scrollX = window.scrollX;
+  let scrollY = window.scrollY;
+  let x = event.x - canvasOffsetLeft + scrollX;
+  let y = event.y - canvasOffsetTop + scrollY;
+  return { x, y };
+}
+
+function colorAt(x, y) {
+  let idx = 4 * ((y) * width + (x));
+  return [pixels[idx], pixels[idx + 1], pixels[idx + 2], pixels[idx + 3]];
 }
 
 function mousePressed(event) {
-  mouseDragged(event);
+  if (fillBox.checked() && event.target == canvas.elt) {
+    let { x, y } = canvasCoordinates(event);
+    loadPixels();
+    let targetColor = [...color];
+    targetColor.push(255);
+    let baseColor = colorAt(x, y);
+    floodFill(x, y, targetColor, baseColor);
+    updatePixels();
+    socket.emit('flood fill', {
+      type: 'flood fill',
+      x: x,
+      y: y,
+      color: targetColor,
+      base: baseColor
+    });
+    // fillBox.checked(false);
+  } else {
+    mouseDragged(event);
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -193,12 +293,12 @@ function clearCanvas() {
 }
 
 function drawData(path) {
-  let x = path.x; // - 6;
-  let y = path.y; // - 6;
+  let x = path.x;
+  let y = path.y;
   let px = path.last.x;
   let py = path.last.y;
 
-  if (px && py && distance(x, y, px, py) > lineWidth / 2) {
+  if (px && py && dist(x, y, px, py) > lineWidth / 2) {
     strokeWeight(lineWidth);
     line(x, y, px, py);
     strokeWeight(0);
@@ -209,25 +309,38 @@ function drawData(path) {
   return { lastX: x, lastY: y };
 }
 
-const OFFSET = 0;
-
+/*
+  TODO: for undo fill an array with event data
+  use set interval to take the current array
+  make an entire transaction out of it
+  clear the array and continue
+  undo does the opposite of the transaction and pushes
+  a new transaction
+  Each transaction including undo can be transmitted
+  over the socket
+  Could change to only transactions (clear would be one,
+    drawing is done by time)
+  or just transmit undos and all the data needed
+    this could cause some synchronization issues,
+    may need to transfer only transcation and
+    transactionify all actions
+*/
 function mouseDragged(event) {
   if (event.target != canvas.elt) {
     return;
   }
 
-  let canvasOffsetTop = canvas.elt.offsetTop;
-  let canvasOffsetLeft = canvas.elt.offsetLeft;
-
-  path.x = event.x - canvasOffsetLeft + (window.scrollX ? window.scrollX - OFFSET : -OFFSET);
-  path.y = event.y - canvasOffsetTop + (window.scrollY ? window.scrollY - OFFSET : -OFFSET);
+  let { x, y } = canvasCoordinates(event);
+  path.x = x;
+  path.y = y;
 
   let last = drawData(path);
   let mouseData = {
     source: id,
     path: path,
     color: color,
-    width: lineWidth
+    width: lineWidth,
+    type: 'paint'
   };
   socket.emit('mouse pressed event', mouseData);
   path.last.x = last.lastX;
