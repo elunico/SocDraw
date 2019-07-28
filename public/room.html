@@ -4,8 +4,14 @@
   <title></title>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    var socket = io('https://socdraw.herokuapp.com/');
-    // var socket = io('http://192.168.56.1:8000/');
+    if (window.location.hostname == 'localhost') {
+      console.log('[+] localhost socket')
+      var socket = io('http://192.168.56.1:8000/');
+    }
+    else {
+      console.log('[+] heroku socket')
+      var socket = io('https://socdraw.herokuapp.com/');
+    };
     var id;
     socket.on('connected', function (data) {
       console.log("Connected! id=" + data.id);
@@ -13,7 +19,13 @@
     });
     socket.on('previous data', function (data) {
       for (let d of data.previousData) {
-        drawIncomingData(d);
+        if (d.type == 'flood fill') {
+          loadPixels();
+          floodFill(d.x, d.y, d.color, d.base);
+          updatePixels();
+        } else if (d.type == 'paint') {
+          drawIncomingData(d);
+        }
       }
     })
     socket.on('nack', function (data) {
@@ -31,6 +43,11 @@
       console.log('received clear');
       clearCanvas();
     });
+    socket.on('flood fill', function (data) {
+      loadPixels();
+      floodFill(data.x, data.y, data.color, data.base);
+      updatePixels();
+    })
     socket.on('mouse released', function (data) { last = { x: undefined, y: undefined }; });
 
     let components = window.location.pathname.split('/');
