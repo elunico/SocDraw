@@ -179,10 +179,10 @@ function colorsEqual(pix, x, y, color) {
   for (let i = 0; i < d; i++) {
     for (let j = 0; j < d; j++) {
       let idx = 4 * ((y * d + j) * width * d + (x * d + i));
-      if (pixels[idx] != color[0]) return false;
-      if (pixels[idx + 1] != color[1]) return false;
-      if (pixels[idx + 2] != color[2]) return false;
-      if (pixels[idx + 3] != color[3]) return false;
+      if (pix[idx] != color[0]) return false;
+      if (pix[idx + 1] != color[1]) return false;
+      if (pix[idx + 2] != color[2]) return false;
+      if (pix[idx + 3] != color[3]) return false;
     }
   }
   return true;
