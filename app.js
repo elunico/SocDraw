@@ -2,7 +2,6 @@ const fs = require('fs');
 const crypto = require('crypto');
 const express = require('express');
 const app = express();
-app.use(express.urlencoded({ extended: true }));
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const Room = require('./room.js');
@@ -52,14 +51,18 @@ app.get('/room/all', function (req, res) {
   res.write('<html><head><title>All Rooms</title></head><body>');
   res.write('<h1>All rooms that exist</h1><ol>');
   for (let roomName of Object.keys(rooms)) {
-    res.write(`<li><a href="/data/${roomName}">${roomName}</a>  `);
+    res.write(`<li><a href="/api/rooms/${roomName}">${roomName}</a>  `);
     res.write(`[clients: ${rooms[roomName].numClients()}]</li>`);
   }
   res.write('</ol></body></html>');
   res.end();
 });
 
-app.get('/data/:name', function (req, res) {
+app.get('/api/rooms', (req, res) => {
+  res.status(200).json(rooms);
+});
+
+app.get('/api/rooms/:name', function (req, res) {
   let room = rooms[req.params.name];
   if (!room) {
     notFound(res);
