@@ -4,8 +4,13 @@
   <title></title>
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    var socket = io('https://socdraw.herokuapp.com/');
-    // var socket = io('http://192.168.56.1:8000/');
+    if (window.location.hostname == 'localhost') {
+      console.log('Hosting on localhost: socket local');
+      var socket = io('http://192.168.56.1:8000/');
+    } else {
+      console.log('Hosting on heroku: socket remote');
+      var socket = io('https://socdraw.herokuapp.com/');
+    }
     var id;
     socket.on('connected', function (data) {
       console.log("Connected! id=" + data.id);
