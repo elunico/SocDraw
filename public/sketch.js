@@ -12,6 +12,7 @@ let blackButton;
 let eraserButton;
 let indigoButton;
 let clearButton;
+let undoButton;
 let sizeSlider;
 let sizeSpan;
 let fillBox;
@@ -24,6 +25,7 @@ let blueSlider;
 let path;
 let imageShowing = false;
 let currentColor = 'black';
+let history;
 
 path = new Path();
 let lineWidth = 10;
@@ -42,6 +44,7 @@ function createElements() {
   purpleButton = createButton('Purple');
   blackButton = createButton('Black');
   eraserButton = createButton('Eraser');
+  undoButton = createButton('Undo');
   createP('');
   fillBox = createCheckbox('Fill');
   createSpan('Red');
@@ -124,6 +127,9 @@ function registerHandlers() {
   orangeButton.mousePressed(colorChanger('orange', [252, 121, 13]));
   blackButton.mousePressed(colorChanger('black', [0, 0, 0]));
   eraserButton.mousePressed(colorChanger('eraser', [255, 255, 255]));
+  undoButton.mousePressed(() => {
+    history.undo();
+  });
   clearButton.mousePressed(() => {
     clearCanvas();
     console.log('socket saying clear');
@@ -153,6 +159,8 @@ function setup() {
   createElements();
   styleElements();
   registerHandlers();
+
+  history = new History(canvas, 20, 15);
 
   strokeWeight(0);
   fill(0);
@@ -198,6 +206,7 @@ function floodFill(x, y, color, base) {
   if (colorsEqual(pixels, x, y, color)) {
     return;
   }
+  history.willModify();
   let stack = [];
   stack.push({ x, y });
   while (stack.length != 0) {
@@ -251,6 +260,7 @@ function colorAt(x, y) {
 
 function mousePressed(event) {
   if (fillBox.checked() && event.target == canvas.elt) {
+    history.willModify();
     let { x, y } = canvasCoordinates(event);
     loadPixels();
     let targetColor = [...color];
@@ -298,6 +308,7 @@ function drawData(path) {
   let px = path.last.x;
   let py = path.last.y;
 
+  history.willModify();
   if (px && py && dist(x, y, px, py) > lineWidth / 2) {
     strokeWeight(lineWidth);
     line(x, y, px, py);
