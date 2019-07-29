@@ -21,10 +21,10 @@
       for (let d of data.previousData) {
         if (d.type == 'flood fill') {
           loadPixels();
-          floodFill(d.x, d.y, d.color, d.base);
+          floodFill(d.x, d.y, d.color, d.base, { transient: true });
           updatePixels();
         } else if (d.type == 'paint') {
-          drawIncomingData(d);
+          drawIncomingData(d, { transient: true });
         }
       }
     })
@@ -62,7 +62,7 @@
   <script src="/libraries/p5.dom.js"></script>
   <script src="/path.js"></script>
   <script src="/sketch.js"></script>
-  <script src="/history.js"></script>
+  <script src="/canvas-history.js"></script>
 
   <style>
     body>* {

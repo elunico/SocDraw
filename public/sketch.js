@@ -25,7 +25,7 @@ let blueSlider;
 let path;
 let imageShowing = false;
 let currentColor = 'black';
-let history;
+let canvasHistory;
 
 path = new Path();
 let lineWidth = 10;
@@ -128,7 +128,7 @@ function registerHandlers() {
   blackButton.mousePressed(colorChanger('black', [0, 0, 0]));
   eraserButton.mousePressed(colorChanger('eraser', [255, 255, 255]));
   undoButton.mousePressed(() => {
-    history.undo();
+    canvasHistory.undo();
   });
   clearButton.mousePressed(() => {
     clearCanvas();
@@ -160,7 +160,7 @@ function setup() {
   styleElements();
   registerHandlers();
 
-  history = new History(canvas, 20, 15);
+  canvasHistory = new CanvasHistory(canvas, 20, 15);
 
   strokeWeight(0);
   fill(0);
@@ -201,12 +201,16 @@ function colorsEqual(pix, x, y, color) {
  * @param {number} y the y coordinate to start
  * @param {number[4]} color color that is filling
  * @param {number[4]} base color that started
+ * @param {object} options optional argument containing optionally one key `transient` indicating whether data should be logged for undoing
  */
-function floodFill(x, y, color, base) {
+function floodFill(x, y, color, base, options) {
+  options = options || {};
   if (colorsEqual(pixels, x, y, color)) {
     return;
   }
-  history.willModify();
+  if (!options.transient) {
+    canvasHistory.willModify();
+  }
   let stack = [];
   stack.push({ x, y });
   while (stack.length != 0) {
@@ -260,7 +264,7 @@ function colorAt(x, y) {
 
 function mousePressed(event) {
   if (fillBox.checked() && event.target == canvas.elt) {
-    history.willModify();
+    canvasHistory.willModify();
     let { x, y } = canvasCoordinates(event);
     loadPixels();
     let targetColor = [...color];
@@ -282,7 +286,8 @@ function mousePressed(event) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function drawIncomingData(data) {
+function drawIncomingData(data, options) {
+  options = options || {};
   let oldColor = color;
   let path = data.path;
   let oldWidth = lineWidth;
@@ -290,7 +295,7 @@ function drawIncomingData(data) {
   color = data.color;
   fill(...color);
   stroke(...color);
-  let p = drawData(path);
+  let p = drawData(path, { transient: options.transient });
   path = p;
   color = oldColor;
   lineWidth = oldWidth;
@@ -302,13 +307,16 @@ function clearCanvas() {
   background(255);
 }
 
-function drawData(path) {
+function drawData(path, options) {
+  options = options || {};
   let x = path.x;
   let y = path.y;
   let px = path.last.x;
   let py = path.last.y;
 
-  history.willModify();
+  if (!options.transient) {
+    canvasHistory.willModify();
+  }
   if (px && py && dist(x, y, px, py) > lineWidth / 2) {
     strokeWeight(lineWidth);
     line(x, y, px, py);
@@ -360,14 +368,20 @@ function mouseDragged(event) {
 
 // eslint-disable-next-line no-unused-vars
 function mouseReleased(event) {
-  path.last = { x: undefined, y: undefined };
-  socket.emit('mouse released', {});
+  if (event.target == canvas.elt) {
+    console.log('Mouse Released');
+    canvasHistory.condense();
+    path.last = { x: undefined, y: undefined };
+    socket.emit('mouse released', {});
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
 function touchEnd(event) {
-  path.last = { x: undefined, y: undefined };
-  socket.emit('mouse released', {});
+  if (event.target == canvas.elt) {
+    path.last = { x: undefined, y: undefined };
+    socket.emit('mouse released', {});
+  }
 }
 
 function eventFromTouchEvent(e) {
