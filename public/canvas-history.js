@@ -11,6 +11,8 @@ class CanvasHistory {
     this.inProgress = false;
     this.last = -1;
     this.timer = null;
+    this.maxStates = 1000;
+    this.timeStepMillis = 350;
   }
 
   /**
@@ -39,7 +41,7 @@ class CanvasHistory {
     if (!this.inProgress) {
       this.last = this.states.length - 1;
       this.inProgress = true;
-      this.timer = setTimeout(this.condense.bind(this), 350);
+      this.timer = setTimeout(this.condense.bind(this), this.timeStepMillis);
     }
     let ctx = this.canvas.elt.getContext('2d');
     let imageData = ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -63,6 +65,14 @@ class CanvasHistory {
     * minute where we started (this.last) minus 2
     */
     this.states.splice(this.last + 2, this.states.length - this.last - 2);
+    this.limitSize();
+  }
+
+  limitSize() {
+    if (this.states.length > this.maxStates) {
+      let i = 0;
+      this.states = this.states.filter(() => i++ < this.maxStates);
+    }
   }
 
   /**
