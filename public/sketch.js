@@ -307,8 +307,9 @@ function drawIncomingData(data, options) {
   stroke(...color);
 }
 
-function clearCanvas() {
-  if (firstClear) {
+function clearCanvas(options) {
+  options = options || {};
+  if (firstClear && !options.force) {
     firstClear = false;
     let doClear = confirm('Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
     if (!doClear) {
