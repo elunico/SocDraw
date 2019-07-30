@@ -47,7 +47,7 @@
     });
     socket.on('clear canvas', function (data) {
       console.log('received clear');
-      clearCanvas({force: true});
+      clearCanvas({ force: true });
     });
     socket.on('flood fill', function (data) {
       loadPixels();

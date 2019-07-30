@@ -405,6 +405,6 @@ function touchMoved(e) {
 try {
   module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
 } catch (e) {
-  if (e instanceof ReferenceError) ;
+  if (e instanceof ReferenceError);
   else throw e;
 }
