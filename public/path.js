@@ -7,3 +7,5 @@ class Path {
     this.last.y = lastY;
   }
 }
+
+module.exports = Path;

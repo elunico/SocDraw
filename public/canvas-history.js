@@ -114,3 +114,5 @@ class CanvasHistory {
 
 
 }
+
+module.exports = CanvasHistory;

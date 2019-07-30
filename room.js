@@ -27,7 +27,7 @@ class Room {
 
   removeClient(clientId) {
     for (let i = this.clients.length - 1; i >= 0; i--) {
-      if (this.clients[i] == clientId) {
+      if (this.clients[i].id == clientId) {
         this.clients.splice(i, 1);
         break;
       }

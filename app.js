@@ -16,7 +16,7 @@ String.prototype.trimAddress = function () {
 }
 
 const PORT = process.env.PORT || 8000;
-server.listen(PORT);
+let listener = server.listen(PORT);
 // app.use(express.static('public'));
 
 (async function () {
@@ -143,3 +143,5 @@ function socketJoinRoom(socket, roomName) {
     }
   })
 }
+
+module.exports = { listener, rooms };

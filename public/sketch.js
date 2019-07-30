@@ -400,3 +400,6 @@ function touchStart(e) {
 function touchMoved(e) {
   mouseDragged(eventFromTouchEvent(e));
 }
+
+
+module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
