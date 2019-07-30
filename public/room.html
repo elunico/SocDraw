@@ -21,10 +21,12 @@
       for (let d of data.previousData) {
         if (d.type == 'flood fill') {
           loadPixels();
-          floodFill(d.x, d.y, d.color, d.base, { transient: true });
+          floodFill(d.x, d.y, d.color, d.base, { transient: false });
           updatePixels();
         } else if (d.type == 'paint') {
-          drawIncomingData(d, { transient: true });
+          drawIncomingData(d, { transient: false });
+        } else if (d.type == 'mouse released') {
+          canvasHistory.didModify();
         }
       }
     })
@@ -35,6 +37,10 @@
       if (data.source != id) {
         drawIncomingData(data);
       }
+    });
+    socket.on('undo', function (data) {
+      console.log('received undo!');
+      canvasHistory.undo();
     });
     socket.on('room removed', function (data) {
       window.location = '/error.html';
@@ -47,8 +53,11 @@
       loadPixels();
       floodFill(data.x, data.y, data.color, data.base);
       updatePixels();
-    })
-    socket.on('mouse released', function (data) { last = { x: undefined, y: undefined }; });
+    });
+    socket.on('mouse released', function (data) {
+      last = { x: undefined, y: undefined };
+      canvasHistory.didModify();
+    });
 
     let components = window.location.pathname.split('/');
     let room = components[components.length - 1];

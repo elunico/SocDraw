@@ -26,6 +26,7 @@ let path;
 let imageShowing = false;
 let currentColor = 'black';
 let canvasHistory;
+let firstClear = true;
 
 path = new Path();
 let lineWidth = 10;
@@ -128,12 +129,15 @@ function registerHandlers() {
   blackButton.mousePressed(colorChanger('black', [0, 0, 0]));
   eraserButton.mousePressed(colorChanger('eraser', [255, 255, 255]));
   undoButton.mousePressed(() => {
+    console.log('socket emits undo');
+    socket.emit('undo', {});
     canvasHistory.undo();
   });
   clearButton.mousePressed(() => {
-    clearCanvas();
-    console.log('socket saying clear');
-    socket.emit('clear canvas', {});
+    if (clearCanvas()) {
+      console.log('socket saying clear');
+      socket.emit('clear canvas', {});
+    }
   });
   redSlider.input(() => {
     currentColor = '&lt;custom&gt;';
@@ -304,7 +308,16 @@ function drawIncomingData(data, options) {
 }
 
 function clearCanvas() {
+  if (firstClear) {
+    firstClear = false;
+    let doClear = confirm('Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
+    if (!doClear) {
+      return false;
+    }
+  }
   background(255);
+  canvasHistory.reset();
+  return true;
 }
 
 function drawData(path, options) {
@@ -328,22 +341,6 @@ function drawData(path, options) {
   return { lastX: x, lastY: y };
 }
 
-/*
-  TODO: for undo fill an array with event data
-  use set interval to take the current array
-  make an entire transaction out of it
-  clear the array and continue
-  undo does the opposite of the transaction and pushes
-  a new transaction
-  Each transaction including undo can be transmitted
-  over the socket
-  Could change to only transactions (clear would be one,
-    drawing is done by time)
-  or just transmit undos and all the data needed
-    this could cause some synchronization issues,
-    may need to transfer only transcation and
-    transactionify all actions
-*/
 function mouseDragged(event) {
   if (event.target != canvas.elt) {
     return;
@@ -369,8 +366,7 @@ function mouseDragged(event) {
 // eslint-disable-next-line no-unused-vars
 function mouseReleased(event) {
   if (event.target == canvas.elt) {
-    console.log('Mouse Released');
-    canvasHistory.condense();
+    canvasHistory.didModify();
     path.last = { x: undefined, y: undefined };
     socket.emit('mouse released', {});
   }
@@ -379,6 +375,7 @@ function mouseReleased(event) {
 // eslint-disable-next-line no-unused-vars
 function touchEnd(event) {
   if (event.target == canvas.elt) {
+    canvasHistory.didModify();
     path.last = { x: undefined, y: undefined };
     socket.emit('mouse released', {});
   }

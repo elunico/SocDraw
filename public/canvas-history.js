@@ -16,14 +16,31 @@ class CanvasHistory {
   }
 
   /**
-   * TODO: keep track of and transmit undo events over the sockets
-   * transmit: send the state that is the target of the undo over the network
-   *           and place it in the canvas ctx? Could be a problem for race conditions!
-   * keep track of: ???? how will I transmit this over the network???
-   *               Perhaps an undo can cause a reset? that means all susequent actions
-   *               are relative to that canvas state (Operational transform)
-   *               the undo triggers a reset of all previous data, and the state
-   *               is simply used as the starting point this happens for every undo
+   * *TODO*: clearing the canvas poses a problem. When undoing the clear
+   * this works for all connected clients but since undo transactions
+   * are descretized by mouse released this undo is not recorded in
+   * previous data which is cleared, so new clients connecting to the
+   * room receive a blank canvas when it was cleared. This is a consequence
+   * of the 'states' array in history representing essentially a similar thing
+   * to the previousData array but different.
+   *
+   * Currently clear just issues an 'un-undoable' warning and continues
+   * clearing the state of history so undo is not done by accident
+   * This could be solved by simply choosing a random client when connecting
+   * to a room and just sending the image data to the new client.
+   *
+   * Since canvas's should be always the same this *should* mean only
+   * one random client has to send this.
+   *
+   * The would lead to the problem of having no one to get the image from
+   * if all the people leave a room. Now, a single client refreshing is ok,
+   * this could be remedied by polling a random client and caching the
+   * canvas view on the server in case someone connects to a room of 0 people.
+   * This would not be sufficient for active rooms with members since
+   * the person receiving the cached copy would lacking some data, so this could only be used
+   * when a 0 room is joined. A further alternative that is perhaps *better*
+   * is to take the canvas image data from the last client to disconnect
+   * and hold onto it incase anyone else connections and then trash it.
    *
    *
    * the willModify captures the imageData of the ctx of
@@ -41,7 +58,7 @@ class CanvasHistory {
     if (!this.inProgress) {
       this.last = this.states.length - 1;
       this.inProgress = true;
-      this.timer = setTimeout(this.condense.bind(this), this.timeStepMillis);
+      // this.timer = setTimeout(this.didModify.bind(this), this.timeStepMillis);
     }
     let ctx = this.canvas.elt.getContext('2d');
     let imageData = ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
@@ -49,11 +66,11 @@ class CanvasHistory {
   }
 
 
-  condense() {
-    if (this.timer) {
-      clearTimeout(this.timer);
-      this.timer = null;
-    }
+  didModify() {
+    // if (this.timer) {
+    // clearTimeout(this.timer);
+    // this.timer = null;
+    // }
     this.inProgress = false;
     /* this.last is the last element before the impending modification
     * this.last + 1 would start deleting at the first element of the impending
@@ -86,6 +103,13 @@ class CanvasHistory {
       let ctx = this.canvas.elt.getContext('2d');
       ctx.putImageData(data, 0, 0);
     }
+  }
+
+  reset() {
+    this.states = [];
+    this.inProgress = false;
+    this.last = -1;
+    this.timer = null;
   }
 
 

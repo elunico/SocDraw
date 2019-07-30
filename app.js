@@ -110,11 +110,16 @@ function socketJoinRoom(socket, roomName) {
   });
   socket.on('mouse released', function (data) {
     socket.to(roomName).emit('mouse released', {});
+    previousData[roomName].push({ type: 'mouse released' });
   });
   socket.on('flood fill', function (data) {
     previousData[roomName].push(data);
     socket.to(roomName).emit('flood fill', data);
   });
+  socket.on('undo', function (data) {
+    // console.log('socket sent undo, emitting undo to room');
+    socket.to(roomName).emit('undo');
+  })
   socket.on('clear canvas', function (data) {
     socket.to(roomName).emit('clear canvas', {});
     previousData[roomName] = [];
