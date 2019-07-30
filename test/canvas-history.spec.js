@@ -5,7 +5,6 @@ const mocha = require('mocha');
 const request = require('supertest');
 const { expect } = require('chai');
 
-
 const CanvasHistory = require('../public/canvas-history.js');
 
 class DummyContext {
@@ -30,7 +29,6 @@ class DummyElt {
   getContext() {
     return this.context;
   }
-
 }
 
 class DummyCanvas {
@@ -41,9 +39,7 @@ class DummyCanvas {
 
 const canvas = new DummyCanvas();
 
-
-
-describe('canvas-history', function () {
+describe('canvas-history.js', function () {
   it('should allow a willModify', function (done) {
     let h = new CanvasHistory(canvas, 10, 20);
     h.willModify();

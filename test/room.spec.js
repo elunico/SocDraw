@@ -5,7 +5,7 @@ const request = require('supertest');
 const { expect } = require('chai');
 const Room = require('../room');
 
-describe('room', function () {
+describe('room.js', function () {
   it('should be empty on start', function (done) {
     let room = new Room();
     expect(room.isEmpty()).to.be.true;

@@ -8,7 +8,7 @@ const { expect } = require('chai');
 const Path = require('../public/path.js');
 
 
-describe('path', function () {
+describe('path.js', function () {
   it('should have all properties', function (done) {
     let path = new Path(1, 2, 3, 4);
     expect(path.x).to.equal(1);

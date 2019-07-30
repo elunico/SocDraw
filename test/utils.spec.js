@@ -6,7 +6,7 @@ const request = require('supertest');
 const { expect } = require('chai');
 const utils = require('../utils');
 
-describe('utils', function () {
+describe('utils.js', function () {
   it('should return local ip address', function (done) {
     utils.getLocalIP().then(addr => {
       expect(addr).to.contain('192.');
