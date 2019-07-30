@@ -144,4 +144,4 @@ function socketJoinRoom(socket, roomName) {
   })
 }
 
-module.exports = { listener, rooms };
+module.exports = { listener, rooms, socketJoinRoom };

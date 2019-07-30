@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable no-unused-vars */
 const mocha = require('mocha');
 const request = require('supertest');
 const { expect } = require('chai');
