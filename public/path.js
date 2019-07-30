@@ -8,4 +8,9 @@ class Path {
   }
 }
 
-module.exports = Path;
+try {
+  module.exports = Path;
+} catch (e) {
+  if (e instanceof ReferenceError);
+  else throw e;
+}

@@ -402,4 +402,9 @@ function touchMoved(e) {
 }
 
 
-module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
+try {
+  module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
+} catch (e) {
+  if (e instanceof ReferenceError) ;
+  else throw e;
+}

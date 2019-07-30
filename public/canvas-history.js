@@ -115,4 +115,9 @@ class CanvasHistory {
 
 }
 
-module.exports = CanvasHistory;
+try {
+  module.exports = CanvasHistory;
+} catch (e) {
+  if (e instanceof ReferenceError);
+  else throw e;
+}
