@@ -8,6 +8,7 @@ let greenButton;
 let yellowButton;
 let orangeButton;
 let purpleButton;
+let brownButton;
 let blackButton;
 let eraserButton;
 let indigoButton;
@@ -15,7 +16,8 @@ let clearButton;
 let undoButton;
 let sizeSlider;
 let sizeSpan;
-let fillBox;
+// FIXME: see below
+// let fillBox;
 let canvas;
 let imageP;
 let saveButton;
@@ -41,13 +43,18 @@ function createElements() {
   yellowButton = createButton('Yellow');
   greenButton = createButton('Green');
   blueButton = createButton('Blue');
+  createP('');
   indigoButton = createButton('Indigo');
   purpleButton = createButton('Purple');
+  brownButton = createButton('Brown');
   blackButton = createButton('Black');
   eraserButton = createButton('Eraser');
   undoButton = createButton('Undo');
   createP('');
-  fillBox = createCheckbox('Fill');
+  // TODO: fill does not work when some css properties are being used?
+  // there may be something wrong will fill
+  // fillBox = createCheckbox('Fill');
+  createP('');
   createSpan('Red');
   redSlider = createSlider(0, 255, 127, 1);
   createSpan('Green');
@@ -66,24 +73,43 @@ function createElements() {
 }
 
 function styleElements() {
-  redSlider.style('width', '200px');
-  blueSlider.style('width', '200px');
-  greenSlider.style('width', '200px');
+  redSlider.style('width', '220px');
+  blueSlider.style('width', '220px');
+  greenSlider.style('width', '220px');
+
+  redSlider.attribute('class', 'slider');
+  blueSlider.attribute('class', 'slider');
+  greenSlider.attribute('class', 'slider');
+
   customColorP.style('margin-left', '5px');
   customColorP.style('font-size', '1.1em');
   customColorP.style('line-height', '1.2em');
   customColorP.style('width', '800px');
-  redButton.style('width', '70px');
-  pinkButton.style('width', '70px');
-  greenButton.style('width', '70px');
-  blueButton.style('width', '70px');
-  yellowButton.style('width', '70px');
-  blackButton.style('width', '70px');
-  eraserButton.style('width', '70px');
-  purpleButton.style('width', '70px');
-  indigoButton.style('width', '70px');
-  orangeButton.style('width', '70px');
+
+  redButton.style('width', '127px');
+  pinkButton.style('width', '127px');
+  greenButton.style('width', '127px');
+  blueButton.style('width', '127px');
+  yellowButton.style('width', '127px');
+  blackButton.style('width', '127px');
+  purpleButton.style('width', '127px');
+  indigoButton.style('width', '127px');
+  orangeButton.style('width', '127px');
+  brownButton.style('width', '127px');
+  eraserButton.style('width', '127px');
+  undoButton.style('width', '127px');
+
+  eraserButton.attribute('class', 'button-primary');
+  undoButton.attribute('class', 'button-primary');
+  saveButton.attribute('class', 'button-primary');
+  clearButton.attribute('class', 'button-primary');
+
   sizeSlider.style('width', '250');
+  sizeSlider.attribute('class', 'slider');
+
+  // fillBox.style('display', 'inline');
+  saveButton.style('width', '200px');
+  clearButton.style('width', '200px');
 }
 
 function registerHandlers() {
@@ -105,7 +131,10 @@ function registerHandlers() {
     imageShowing = !imageShowing;
   });
 
-  function colorChanger(colorName, colorArray) {
+  function colorChanger(p5btn, colorName, colorArray) {
+    if (p5btn) {
+      p5btn.style('color', `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`);
+    }
     return () => {
       currentColor = colorName;
       color = colorArray;
@@ -118,16 +147,17 @@ function registerHandlers() {
     };
   }
 
-  pinkButton.mousePressed(colorChanger('pink', [255, 143, 180]));
-  redButton.mousePressed(colorChanger('red', [255, 0, 0]));
-  blueButton.mousePressed(colorChanger('blue', [0, 0, 255]));
-  greenButton.mousePressed(colorChanger('green', [0, 255, 0]));
-  yellowButton.mousePressed(colorChanger('yellow', [255, 255, 0]));
-  indigoButton.mousePressed(colorChanger('indigo', [75, 0, 130]));
-  purpleButton.mousePressed(colorChanger('purple', [255, 0, 255]));
-  orangeButton.mousePressed(colorChanger('orange', [252, 121, 13]));
-  blackButton.mousePressed(colorChanger('black', [0, 0, 0]));
-  eraserButton.mousePressed(colorChanger('eraser', [255, 255, 255]));
+  pinkButton.mousePressed(colorChanger(pinkButton, 'pink', [255, 143, 180]));
+  redButton.mousePressed(colorChanger(redButton, 'red', [255, 0, 0]));
+  blueButton.mousePressed(colorChanger(blueButton, 'blue', [0, 0, 255]));
+  greenButton.mousePressed(colorChanger(greenButton, 'green', [0, 255, 0]));
+  yellowButton.mousePressed(colorChanger(yellowButton, 'yellow', [255, 255, 0]));
+  indigoButton.mousePressed(colorChanger(indigoButton, 'indigo', [75, 0, 130]));
+  purpleButton.mousePressed(colorChanger(purpleButton, 'purple', [255, 0, 255]));
+  orangeButton.mousePressed(colorChanger(orangeButton, 'orange', [252, 121, 13]));
+  blackButton.mousePressed(colorChanger(blackButton, 'black', [0, 0, 0]));
+  brownButton.mousePressed(colorChanger(brownButton, 'brown', [105, 64, 6]));
+  eraserButton.mousePressed(colorChanger(null, 'eraser', [255, 255, 255]));
   undoButton.mousePressed(() => {
     console.log('socket emits undo');
     socket.emit('undo', {});
@@ -147,6 +177,10 @@ function registerHandlers() {
   });
   greenSlider.input(() => {
     currentColor = '&lt;custom&gt;';
+  });
+  sizeSlider.input(() => {
+    sizeSpan.html(sizeSlider.value());
+    lineWidth = Number(sizeSlider.value());
   });
 }
 
@@ -168,13 +202,13 @@ function setup() {
 
   strokeWeight(0);
   fill(0);
+  sizeSpan.html(sizeSlider.value());
+  lineWidth = Number(sizeSlider.value());
   socket.emit('setup done', {});
 }
 
 // eslint-disable-next-line no-unused-vars
 function draw() {
-  lineWidth = sizeSlider.value();
-  sizeSpan.html(lineWidth);
   if (currentColor === '&lt;custom&gt;') {
     let red = redSlider.value();
     let green = greenSlider.value();
@@ -267,26 +301,25 @@ function colorAt(x, y) {
 }
 
 function mousePressed(event) {
-  if (fillBox.checked() && event.target == canvas.elt) {
-    canvasHistory.willModify();
-    let { x, y } = canvasCoordinates(event);
-    loadPixels();
-    let targetColor = [...color];
-    targetColor.push(255);
-    let baseColor = colorAt(x, y);
-    floodFill(x, y, targetColor, baseColor);
-    updatePixels();
-    socket.emit('flood fill', {
-      type: 'flood fill',
-      x: x,
-      y: y,
-      color: targetColor,
-      base: baseColor
-    });
-    // fillBox.checked(false);
-  } else {
-    mouseDragged(event);
-  }
+  // if (fillBox.checked() && event.target == canvas.elt) {
+  // canvasHistory.willModify();
+  // let { x, y } = canvasCoordinates(event);
+  // loadPixels();
+  // let targetColor = [...color];
+  // targetColor.push(255);
+  // let baseColor = colorAt(x, y);
+  // floodFill(x, y, targetColor, baseColor);
+  // updatePixels();
+  // socket.emit('flood fill', {
+  //   type: 'flood fill',
+  //   x: x,
+  //   y: y,
+  //   color: targetColor,
+  //   base: baseColor
+  // });
+  // } else {
+  mouseDragged(event);
+  // }
 }
 
 // eslint-disable-next-line no-unused-vars

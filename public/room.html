@@ -2,6 +2,7 @@
 
 <head>
   <title></title>
+  <link href="https://fonts.googleapis.com/css?family=Dosis:700,800&display=swap" rel="stylesheet">
   <script src="/socket.io/socket.io.js"></script>
   <script>
     if (window.location.hostname == 'localhost') {
@@ -20,7 +21,6 @@
     socket.on('previous data', function (data) {
       let previousState = null;
       for (let d of data.previousData) {
-        console.log(d.type);
         if (d.type == 'flood fill') {
           loadPixels();
           floodFill(d.x, d.y, d.color, d.base, { transient: false });
@@ -33,6 +33,10 @@
           canvasHistory.didModify();
         }
       }
+      let title = document.querySelector('#room-name');
+      title.removeAttribute('hidden');
+      let loading = document.querySelector('#is-loading');
+      loading.setAttribute('hidden', 'true');
     })
     socket.on('nack', function (data) {
       console.log('Error server got bad data');
@@ -79,18 +83,55 @@
 
   <style>
     body>* {
+      font-family: "Dosis", sans-serif;
       margin: 4px;
     }
 
     h1 {
-      font-size: 1.5em;
+      font-size: 1.75em;
+      font-family: "Dosis", sans-serif;
+      font-weight: 700;
+    }
+
+    button {
+      background-color: #fff;
+      border: 1px solid #aaa;
+      height: 38px;
+      font-size: 0.8em;
+      font-family: "Dosis", sans-serif;
+      text-transform: capitalize;
+      font-weight: 700;
+      /*
+       * border-radius, transition, -webkit-appearence, -webkit-transition
+       * for some reason all ruin floodFill so I cannot use them????
+       */
+      border-radius: 6px;
+      transition: background-color 200ms linear, border 200ms linear;
+    }
+
+    button:hover {
+      background-color: rgb(235, 235, 235);
+      border: 1px solid #777;
+    }
+
+    .button-primary {
+      background-color: #33c3f0;
+      border: 1px solid rgb(8, 124, 160);
+      color: white;
+    }
+
+    .button-primary:hover {
+      background-color: #1ca8d3;
+      border: 1px solid rgb(1, 80, 104);
+      color: white;
     }
   </style>
 
 </head>
 
 <body>
-  <h1 id="room-name"></h1>
+  <h1 id="is-loading">Please Wait! Loading...<br>If this is taking long, try clearing the canvas</h1>
+  <h1 id="room-name" hidden></h1>
   <img alt="Shows the current state of the canvas. Hidden until user clicks 'save canvas'" width="800" height="600"
     id="save-img" hidden src="">
   <script>

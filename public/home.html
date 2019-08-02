@@ -2,19 +2,30 @@
 
 <head>
   <title>Welcome to SocDraw</title>
+  <link href="https://fonts.googleapis.com/css?family=Dosis:700,800&display=swap" rel="stylesheet">
   <style>
     body>* {
       /* margin: 4px; */
       margin: 2% 17% 2% 17%;
     }
 
+    /* body { */
+    /* background-color: #eee; */
+    /* } */
+
     .instructions {
       font-size: 1.2em;
+      font-family: "Dosis", sans-serif;
     }
 
     .big-or {
       font-size: 2em;
       font-weight: 800;
+      font-family: "Dosis", sans-serif;
+    }
+
+    .title {
+      font-family: "Dosis", sans-serif;
     }
 
     .main-table {
@@ -37,6 +48,32 @@
       transition: transform 75ms ease-in-out, background-color 75ms linear;
     }
 
+    .button {
+      background-color: #eee;
+      border: 1px solid #999;
+      height: 60px;
+      font-size: 1.3em;
+      font-family: "Dosis";
+      text-transform: capitalize;
+      display: grid;
+      align-content: center;
+      justify-content: center;
+      font-weight: 700;
+      /*
+       * border-radius, transition, -webkit-appearence, -webkit-transition
+       * for some reason all ruin floodFill so I cannot use them????
+       */
+      border-radius: 6px;
+      transition: background-color 190ms linear, border 190ms linear;
+    }
+
+    .button:focus,
+    .button:hover {
+      background-color: rgb(255, 255, 235);
+      /* background-color: rgb(235, 235, 235); */
+      border: 1px solid #333;
+    }
+
     .btn:hover {
       transform: scale(0.97);
       background-color: darkgreen;
@@ -55,10 +92,12 @@
 
     .footer {
       font-size: 1em;
+      font-family: "Dosis", sans-serif;
     }
 
     .input-label {
       font-size: 0.9em;
+      font-family: "Dosis", sans-serif;
     }
 
     .footer-src:hover {
@@ -96,7 +135,7 @@
 </head>
 
 <body>
-  <h1>
+  <h1 class="title">
     Welcome to SocDraw!
   </h1>
   <p class="instructions">
@@ -123,7 +162,7 @@
     <!-- <tr> -->
     <tr>
       <td>
-        <div class="btn" onclick="newRoom()">
+        <div class="button" onclick="newRoom()">
           <span>Create New Room</span>
         </div>
       </td>
@@ -137,7 +176,7 @@
       <td>
         <label class="input-label" for="room-box">Name of Room to Join</label>
         <input class="room-input" type="text" id="room-box" placeholder="Room Name">
-        <div class="btn" onclick="goToRoom()">
+        <div class="button" onclick="goToRoom()">
           Join Room
         </div>
       </td>
