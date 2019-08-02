@@ -75,9 +75,6 @@ app.get('/room/in/:w1', function (req, res) {
 
 io.on('connection', (socket) => {
   console.log(`[+] Connecting to client ${socket.id} at ${socket.handshake.address.trimAddress()}`);
-  socket.on('console', function (data) {
-    console.log(`[from: ${data.id}] ${data.message}`);
-  });
   socket.on('needs assignment', function (data) {
     if (rooms[data.room]) {
       socketJoinRoom(socket, data.room);
