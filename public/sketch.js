@@ -188,6 +188,7 @@ function registerHandlers() {
 function setup() {
   pixelDensity(1);
   canvas = createCanvas(800, 600);
+  canvas.attribute('hidden', true);
   canvas.style('border-style', 'solid');
   canvas.style('border-color', 'black');
   canvas.style('border-width', '1px');
