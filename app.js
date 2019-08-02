@@ -102,10 +102,6 @@ function socketJoinRoom(socket, roomName) {
   socket.join(roomName);
   socket.on('mouse pressed event', function (data) {
     socket.to(roomName).emit('ack', { success: true });
-    if (!rooms[roomName].drawInProgress){
-      previousData[roomName].push({ type: 'willModify' });
-      rooms[roomName].drawInProgress = true;
-    }
     previousData[roomName].push(data);
     socket.to(roomName).emit('incoming drawing', data);
   });
@@ -113,8 +109,6 @@ function socketJoinRoom(socket, roomName) {
     socket.emit('previous data', { previousData: previousData[roomName] });
   });
   socket.on('mouse released', function (data) {
-    rooms[roomName].drawInProgress = false;
-    previousData[roomName].push({ type: 'didModify' });
     previousData[roomName].push({ type: 'mouse released' });
     socket.to(roomName).emit('mouse released', {});
   });

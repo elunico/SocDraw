@@ -17,19 +17,6 @@
       console.log("Connected! id=" + data.id);
       id = data.id;
     });
-    socket.on('canvas please', function (data, callback) {
-      console.log("sending canvas");
-      let state = canvas.elt.getContext('2d').getImageData(0, 0, canvas.elt.width, canvas.elt.height);
-      let ack = {
-        width: canvas.elt.width,
-        height: canvas.elt.height,
-        state: state
-      };
-      callback(ack);
-    });
-    socket.on('canvas state', function (data) {
-      console.log(Object.keys(data));
-    });
     socket.on('previous data', function (data) {
       let previousState = null;
       for (let d of data.previousData) {
@@ -40,8 +27,6 @@
           updatePixels();
         } else if (d.type == 'paint') {
           drawIncomingData(d, { transient: false });
-        } else if (d.type == 'willModify') {
-          // do nothing 
         } else if (d.type == 'undo') {
           canvasHistory.undo();
         } else if (d.type == 'mouse released') {
