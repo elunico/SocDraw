@@ -7,3 +7,10 @@ class Path {
     this.last.y = lastY;
   }
 }
+
+try {
+  module.exports = Path;
+} catch (e) {
+  if (e instanceof ReferenceError);
+  else throw e;
+}

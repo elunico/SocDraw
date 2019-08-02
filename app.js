@@ -16,7 +16,7 @@ String.prototype.trimAddress = function () {
 }
 
 const PORT = process.env.PORT || 8000;
-server.listen(PORT);
+let listener = server.listen(PORT);
 // app.use(express.static('public'));
 
 (async function () {
@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
         rooms[data.room].cancelDeletion();
         console.log(`[+] Room ${data.room} is no longer scheduled for deletion because someone connected to it`);
       }
-      rooms[data.room].addClient(socket.id);
+      rooms[data.room].addClient(socket);
       console.log(`[*] Room ${data.room} now has ${rooms[data.room].numClients()} members`);
     } else {
       socket.emit('room removed', {});
@@ -109,12 +109,17 @@ function socketJoinRoom(socket, roomName) {
     socket.emit('previous data', { previousData: previousData[roomName] });
   });
   socket.on('mouse released', function (data) {
+    previousData[roomName].push({ type: 'mouse released' });
     socket.to(roomName).emit('mouse released', {});
   });
   socket.on('flood fill', function (data) {
     previousData[roomName].push(data);
     socket.to(roomName).emit('flood fill', data);
   });
+  socket.on('undo', function (data) {
+    previousData[roomName].push({ type: 'undo' });
+    socket.to(roomName).emit('undo');
+  })
   socket.on('clear canvas', function (data) {
     socket.to(roomName).emit('clear canvas', {});
     previousData[roomName] = [];
@@ -138,3 +143,5 @@ function socketJoinRoom(socket, roomName) {
     }
   })
 }
+
+module.exports = { listener, rooms, socketJoinRoom };

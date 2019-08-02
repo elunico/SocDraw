@@ -12,6 +12,7 @@ let blackButton;
 let eraserButton;
 let indigoButton;
 let clearButton;
+let undoButton;
 let sizeSlider;
 let sizeSpan;
 let fillBox;
@@ -24,6 +25,8 @@ let blueSlider;
 let path;
 let imageShowing = false;
 let currentColor = 'black';
+let canvasHistory;
+let firstClear = true;
 
 path = new Path();
 let lineWidth = 10;
@@ -42,6 +45,7 @@ function createElements() {
   purpleButton = createButton('Purple');
   blackButton = createButton('Black');
   eraserButton = createButton('Eraser');
+  undoButton = createButton('Undo');
   createP('');
   fillBox = createCheckbox('Fill');
   createSpan('Red');
@@ -124,10 +128,16 @@ function registerHandlers() {
   orangeButton.mousePressed(colorChanger('orange', [252, 121, 13]));
   blackButton.mousePressed(colorChanger('black', [0, 0, 0]));
   eraserButton.mousePressed(colorChanger('eraser', [255, 255, 255]));
+  undoButton.mousePressed(() => {
+    console.log('socket emits undo');
+    socket.emit('undo', {});
+    canvasHistory.undo();
+  });
   clearButton.mousePressed(() => {
-    clearCanvas();
-    console.log('socket saying clear');
-    socket.emit('clear canvas', {});
+    if (clearCanvas()) {
+      console.log('socket saying clear');
+      socket.emit('clear canvas', {});
+    }
   });
   redSlider.input(() => {
     currentColor = '&lt;custom&gt;';
@@ -153,6 +163,8 @@ function setup() {
   createElements();
   styleElements();
   registerHandlers();
+
+  canvasHistory = new CanvasHistory(canvas, 20, 15);
 
   strokeWeight(0);
   fill(0);
@@ -193,10 +205,15 @@ function colorsEqual(pix, x, y, color) {
  * @param {number} y the y coordinate to start
  * @param {number[4]} color color that is filling
  * @param {number[4]} base color that started
+ * @param {object} options optional argument containing optionally one key `transient` indicating whether data should be logged for undoing
  */
-function floodFill(x, y, color, base) {
+function floodFill(x, y, color, base, options) {
+  options = options || {};
   if (colorsEqual(pixels, x, y, color)) {
     return;
+  }
+  if (!options.transient) {
+    canvasHistory.willModify();
   }
   let stack = [];
   stack.push({ x, y });
@@ -251,6 +268,7 @@ function colorAt(x, y) {
 
 function mousePressed(event) {
   if (fillBox.checked() && event.target == canvas.elt) {
+    canvasHistory.willModify();
     let { x, y } = canvasCoordinates(event);
     loadPixels();
     let targetColor = [...color];
@@ -272,7 +290,8 @@ function mousePressed(event) {
 }
 
 // eslint-disable-next-line no-unused-vars
-function drawIncomingData(data) {
+function drawIncomingData(data, options) {
+  options = options || {};
   let oldColor = color;
   let path = data.path;
   let oldWidth = lineWidth;
@@ -280,7 +299,7 @@ function drawIncomingData(data) {
   color = data.color;
   fill(...color);
   stroke(...color);
-  let p = drawData(path);
+  let p = drawData(path, { transient: options.transient });
   path = p;
   color = oldColor;
   lineWidth = oldWidth;
@@ -288,16 +307,30 @@ function drawIncomingData(data) {
   stroke(...color);
 }
 
-function clearCanvas() {
+function clearCanvas(options) {
+  options = options || {};
+  if (firstClear && !options.force) {
+    firstClear = false;
+    let doClear = confirm('Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
+    if (!doClear) {
+      return false;
+    }
+  }
   background(255);
+  canvasHistory.reset();
+  return true;
 }
 
-function drawData(path) {
+function drawData(path, options) {
+  options = options || {};
   let x = path.x;
   let y = path.y;
   let px = path.last.x;
   let py = path.last.y;
 
+  if (!options.transient) {
+    canvasHistory.willModify();
+  }
   if (px && py && dist(x, y, px, py) > lineWidth / 2) {
     strokeWeight(lineWidth);
     line(x, y, px, py);
@@ -309,22 +342,6 @@ function drawData(path) {
   return { lastX: x, lastY: y };
 }
 
-/*
-  TODO: for undo fill an array with event data
-  use set interval to take the current array
-  make an entire transaction out of it
-  clear the array and continue
-  undo does the opposite of the transaction and pushes
-  a new transaction
-  Each transaction including undo can be transmitted
-  over the socket
-  Could change to only transactions (clear would be one,
-    drawing is done by time)
-  or just transmit undos and all the data needed
-    this could cause some synchronization issues,
-    may need to transfer only transcation and
-    transactionify all actions
-*/
 function mouseDragged(event) {
   if (event.target != canvas.elt) {
     return;
@@ -349,14 +366,20 @@ function mouseDragged(event) {
 
 // eslint-disable-next-line no-unused-vars
 function mouseReleased(event) {
-  path.last = { x: undefined, y: undefined };
-  socket.emit('mouse released', {});
+  if (event.target == canvas.elt) {
+    canvasHistory.didModify();
+    path.last = { x: undefined, y: undefined };
+    socket.emit('mouse released', {});
+  }
 }
 
 // eslint-disable-next-line no-unused-vars
 function touchEnd(event) {
-  path.last = { x: undefined, y: undefined };
-  socket.emit('mouse released', {});
+  if (event.target == canvas.elt) {
+    canvasHistory.didModify();
+    path.last = { x: undefined, y: undefined };
+    socket.emit('mouse released', {});
+  }
 }
 
 function eventFromTouchEvent(e) {
@@ -376,4 +399,12 @@ function touchStart(e) {
 // eslint-disable-next-line no-unused-vars
 function touchMoved(e) {
   mouseDragged(eventFromTouchEvent(e));
+}
+
+
+try {
+  module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
+} catch (e) {
+  if (e instanceof ReferenceError);
+  else throw e;
 }
