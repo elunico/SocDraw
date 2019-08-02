@@ -1,4 +1,5 @@
 const fs = require('fs');
+const crypto = require('crypto');
 const express = require('express');
 const app = express();
 const server = require('http').Server(app);
@@ -42,6 +43,31 @@ app.get('/:anything', function (req, res) {
     res.sendFile(__dirname + '/public/' + req.params.anything);
   } catch (e) {
     notFound(res);
+  }
+});
+
+app.get('/room/all', function (req, res) {
+  res.write('<html><head><title>All Rooms</title></head><body>');
+  res.write('<h1>All rooms that exist</h1><ol>');
+  for (let roomName of Object.keys(rooms)) {
+    res.write(`<li><a href="/api/rooms/${roomName}">${roomName}</a>  `);
+    res.write(`[clients: ${rooms[roomName].numClients()}]</li>`);
+  }
+  res.write('</ol></body></html>');
+  res.end();
+});
+
+app.get('/api/rooms', (req, res) => {
+  res.status(200).json(rooms);
+});
+
+app.get('/api/rooms/:name', function (req, res) {
+  let room = rooms[req.params.name];
+  if (!room) {
+    notFound(res);
+  } else {
+    let data = previousData[room.name];
+    res.json(data);
   }
 });
 

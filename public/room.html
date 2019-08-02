@@ -8,8 +8,7 @@
     if (window.location.hostname == 'localhost') {
       console.log('[+] localhost socket')
       var socket = io('http://192.168.56.1:8000/');
-    }
-    else {
+    } else {
       console.log('[+] heroku socket')
       var socket = io('https://socdraw.herokuapp.com/');
     };
@@ -23,10 +22,14 @@
       for (let d of data.previousData) {
         if (d.type == 'flood fill') {
           loadPixels();
-          floodFill(d.x, d.y, d.color, d.base, { transient: false });
+          floodFill(d.x, d.y, d.color, d.base, {
+            transient: false
+          });
           updatePixels();
         } else if (d.type == 'paint') {
-          drawIncomingData(d, { transient: false });
+          drawIncomingData(d, {
+            transient: false
+          });
         } else if (d.type == 'undo') {
           canvasHistory.undo();
         } else if (d.type == 'mouse released') {
@@ -56,7 +59,9 @@
     });
     socket.on('clear canvas', function (data) {
       console.log('received clear');
-      clearCanvas({ force: true });
+      clearCanvas({
+        force: true
+      });
     });
     socket.on('flood fill', function (data) {
       loadPixels();
@@ -64,7 +69,10 @@
       updatePixels();
     });
     socket.on('mouse released', function (data) {
-      last = { x: undefined, y: undefined };
+      last = {
+        x: undefined,
+        y: undefined
+      };
       canvasHistory.didModify();
     });
 
@@ -74,7 +82,9 @@
     let title = document.querySelector('title');
     title.textContent = `SocDraw in room ${room}`;
 
-    socket.emit('needs assignment', { room });
+    socket.emit('needs assignment', {
+      room
+    });
   </script>
   <script src="/libraries/p5.minv0.9.0.js"></script>
   <script src="/libraries/p5.dom.minv0.9.0.js"></script>
@@ -140,15 +150,21 @@
       window.addEventListener("touchstart", function (e) {
         if (e.target == canvas.elt)
           e.preventDefault();
-      }, { passive: false });
+      }, {
+        passive: false
+      });
       window.addEventListener("touchend", function (e) {
         if (e.target == canvas.elt)
           e.preventDefault();
-      }, { passive: false });
+      }, {
+        passive: false
+      });
       window.addEventListener("touchmove", function (e) {
         if (e.target == canvas.elt)
           e.preventDefault();
-      }, { passive: false });
+      }, {
+        passive: false
+      });
     })();
 
     let roomName = document.querySelector('#room-name');
