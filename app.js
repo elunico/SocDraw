@@ -83,7 +83,7 @@ io.on('connection', (socket) => {
         rooms[data.room].cancelDeletion();
         console.log(`[+] Room ${data.room} is no longer scheduled for deletion because someone connected to it`);
       }
-      rooms[data.room].addClient(socket.id);
+      rooms[data.room].addClient(socket);
       console.log(`[*] Room ${data.room} now has ${rooms[data.room].numClients()} members`);
     } else {
       socket.emit('room removed', {});
@@ -102,6 +102,10 @@ function socketJoinRoom(socket, roomName) {
   socket.join(roomName);
   socket.on('mouse pressed event', function (data) {
     socket.to(roomName).emit('ack', { success: true });
+    if (!rooms[roomName].drawInProgress){
+      previousData[roomName].push({ type: 'willModify' });
+      rooms[roomName].drawInProgress = true;
+    }
     previousData[roomName].push(data);
     socket.to(roomName).emit('incoming drawing', data);
   });
@@ -109,15 +113,17 @@ function socketJoinRoom(socket, roomName) {
     socket.emit('previous data', { previousData: previousData[roomName] });
   });
   socket.on('mouse released', function (data) {
-    socket.to(roomName).emit('mouse released', {});
+    rooms[roomName].drawInProgress = false;
+    previousData[roomName].push({ type: 'didModify' });
     previousData[roomName].push({ type: 'mouse released' });
+    socket.to(roomName).emit('mouse released', {});
   });
   socket.on('flood fill', function (data) {
     previousData[roomName].push(data);
     socket.to(roomName).emit('flood fill', data);
   });
   socket.on('undo', function (data) {
-    // console.log('socket sent undo, emitting undo to room');
+    previousData[roomName].push({ type: 'undo' });
     socket.to(roomName).emit('undo');
   })
   socket.on('clear canvas', function (data) {

@@ -12,6 +12,7 @@ const { listener, rooms, socketJoinRoom } = require('../app');
 
 describe('app.js', function () {
   describe('listener', function () {
+    this.slow(75);
     after(() => listener.close());
 
     it('should send file home.html from /public', function (done) {
@@ -76,6 +77,7 @@ describe('app.js', function () {
   });
 
   describe('socket', function () {
+    this.slow(15);
     class DummySocket {
       constructor() {
         this.id = 'dummy-socket-id-1';

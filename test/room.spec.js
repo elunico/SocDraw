@@ -14,8 +14,8 @@ describe('room.js', function () {
 
   it('should contain two clients and not be empty', function (done) {
     let room = new Room();
-    room.addClient({ id: 0, dummy: true });
-    room.addClient({ id: 1, dummy: true });
+    room.addClient({ id: 0, other: 'dummy' });
+    room.addClient({ id: 1, other: 'dummy' });
     expect(room.numClients()).equals(2);
     expect(room.isEmpty()).to.be.false;
     done();
@@ -40,8 +40,8 @@ describe('room.js', function () {
 
   it('should contain 2 then be empty', function (done) {
     let room = new Room();
-    room.addClient(/*id=*/0);
-    room.addClient(/*id=*/1);
+    room.addClient({ id: 0, other: 'dummy' });
+    room.addClient({ id: 1, other: 'dummy' });
     room.removeClient(0);
     room.removeClient(1);
     expect(room.isEmpty()).to.be.true;

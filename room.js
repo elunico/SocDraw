@@ -18,16 +18,16 @@ class Room {
     return this.clients.length;
   }
 
-  addClient(clientId) {
-    if (this.clients.indexOf(clientId) >= 0) {
+  addClient(socket) {
+    if (this.clients.filter(s => s.id == socket.id).length > 0) {
       throw 'No Duplicate Clients!';
     }
-    this.clients.push(clientId);
+    this.clients.push({ socket: socket, id: socket.id });
   }
 
   removeClient(clientId) {
     for (let i = this.clients.length - 1; i >= 0; i--) {
-      if (this.clients[i] == clientId) {
+      if (this.clients[i].id == clientId) {
         this.clients.splice(i, 1);
         break;
       }
@@ -37,6 +37,12 @@ class Room {
   isEmpty() {
     return this.clients.length == 0;
   }
+
+  randomClient() {
+    let c = this.clients[0];
+    return c;
+  }
+
 }
 
 module.exports = Room;
