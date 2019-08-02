@@ -1,6 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 class CanvasHistory {
-  constructor(canvas, rows, cols) {
+  constructor(canvas, rows, cols, maxStates) {
     this.canvas = canvas;
     this.rows = rows;
     this.cols = cols;
@@ -11,7 +11,7 @@ class CanvasHistory {
     this.inProgress = false;
     this.last = -1;
     this.timer = null;
-    this.maxStates = 1000;
+    this.maxStates = maxStates || 50;
     this.timeStepMillis = 350;
   }
 
