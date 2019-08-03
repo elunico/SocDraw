@@ -49,7 +49,7 @@ describe('app.js', function () {
     });
 
     it('should return library code', function (done) {
-      request(listener).get('/libraries/p5.js').expect(200).end(function (err, res) {
+      request(listener).get('/libraries/p5.minv0.9.0.js').expect(200).end(function (err, res) {
         if (err) {
           done(err);
         } else {
