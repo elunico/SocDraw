@@ -5,7 +5,7 @@ console.log = () => { };
 
 const mocha = require('mocha');
 const request = require('supertest');
-const { expect } = require('chai');
+const { expect, chaiRequest } = require('chai');
 const Room = require('../room');
 const fs = require('fs');
 const { listener, rooms, socketJoinRoom } = require('../app');
@@ -70,9 +70,68 @@ describe('app.js', function () {
           done(err);
         } else {
           expect(Object.keys(rooms)).to.have.lengthOf(1);
-          done();
+          let room = Object.keys(rooms)[0];
+          request(listener).get(`/room/in/${room}`).expect(200).end(function (err, res) {
+            if (err) {
+              done(err);
+            } else {
+              expect(res.text).to.contain('html');
+              done();
+            }
+          });
         }
       });
+    });
+  });
+
+  describe('auth and api', function () {
+    it('should return 403 Forebidden with no token on rooms', function (done) {
+      request(listener).get('/api/rooms').expect(403, done);
+    });
+
+    it('should return 403 Forebidden on a room that doesn\'t exist with no token', function (done) {
+      request(listener).get('/api/rooms/not-found').expect(403, done);
+    });
+
+    it('should return success: false on empty authenticate', function (done) {
+      request(listener).post('/api/authenticate').expect(200).end(function (err, res) {
+        expect(JSON.parse(res.text).success).to.be.false;
+        done();
+      });
+    });
+
+    it('should not authenticate with bad password', function (done) {
+      request(listener).post('/api/authenticate')
+        .expect(200)
+        .send({ password: 'invalid', timeStamp: new Date().getTime() })
+        .end(function (err, res) {
+          expect(JSON.parse(res.text).success).to.be.false;
+          done();
+        });
+    });
+
+    it('should not authenticate with no timeStamp', function (done) {
+      request(listener).post('/api/authenticate')
+        .expect(200)
+        .send({ password: process.env.PASSPHRASE })
+        .end(function (err, res) {
+          expect(JSON.parse(res.text).success).to.be.false;
+          done();
+        });
+    });
+
+    // chai not supertest http ? 
+    it('should authenticate successfully with correct credentials', function (done) {
+      let loginSession = request.agent(listener);
+      loginSession.post('/api/authenticate')
+        .expect(200)
+        .send({ password: process.env.PASSPHRASE, timeStamp: new Date().getTime() })
+        .then((res) => {
+          expect(JSON.parse(res.text).success).to.be.true;
+          loginSession.get('/api/rooms').expect(200).then(function (res) {
+            done();
+          }).catch(err => done(err));
+        }).catch(err => done(err));
     });
   });
 

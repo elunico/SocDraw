@@ -23,6 +23,19 @@ describe('auth.js', function () {
     done();
   });
 
+  it('should invalidate tokens', function (done) {
+    let tok = 'token1';
+    let tok2 = 'token2';
+    auth.registerToken(tok);
+    auth.registerToken(tok2);
+    expect(auth.validToken(tok)).to.be.true;
+    expect(auth.validToken(tok2)).to.be.true;
+    auth.clobberTokens();
+    expect(auth.validToken(tok)).to.be.false;
+    expect(auth.validToken(tok2)).to.be.false;
+    done();
+  });
+
   it('should register token and then return valid', function (done) {
     let tok = 'token';
     auth.registerToken(tok);
