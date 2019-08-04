@@ -1,15 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-
-old = console.log;
-
-console.log = (msg) => {
-  if (socket) {
-    socket.emit('console', { id: socket.id, message: msg });
-  }
-  old(msg);
-};
-
 let pinkButton;
 let redButton;
 let blueButton;

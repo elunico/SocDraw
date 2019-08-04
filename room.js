@@ -5,6 +5,27 @@ class Room {
     this.deleteTimer = null;
   }
 
+  toJSON() {
+    const ret = {
+      name: this.name,
+      deleteTimer: null,
+      clients: [],
+      links: {
+        relative: `/api/rooms/${this.name}`,
+        absolute: `http://localhost:8000/api/rooms/${this.name}`
+      }
+    };
+
+    if (this.deleteTimer) {
+      ret.deleteTimer = 'Timer{active: true, [circular]}';
+    }
+
+    for (let socket of this.clients) {
+      ret.clients.push(socket.id);
+    }
+    return ret;
+  }
+
   willBeDeleted() {
     return this.deleteTimer != null;
   }

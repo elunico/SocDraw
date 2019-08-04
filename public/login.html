@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Login for SocDraw</title>
+  <script>
+
+    function submitForm() {
+      let password = document.querySelector("#password-field").value;
+      let body = JSON.stringify({ password: password, timeStamp: (new Date()).getTime() });
+      fetch('/api/authenticate', {
+        headers: {
+          "Content-Type": "application/json"
+        },
+        method: "POST",
+        body: body
+      }).then(r => r.json()).then(r => {
+        if (r && r.success) {
+          // document.cookie = `socdraw_token=${r.token};expires=${new Date().getTime() + 86400}`
+          window.location = '/api/rooms';
+        } else {
+          alert("Failed to authenticate");
+        }
+      }).catch(err => {
+        alert(err);
+      });
+    }
+
+    function checkAndSubmit(keyEvent) {
+      if (event.keyCode == 13) {
+        if (document.querySelector('#password-field').value)
+          submitForm();
+        event.preventDefault();
+      }
+    }
+
+    document.onkeypress = function (event) {
+      checkAndSubmit(event);
+    }
+
+  </script>
+</head>
+
+<body>
+  <label for="password-field">Password:</label>
+  <input type="password" onkeydown="checkAndSubmit()" id="password-field">
+  <input type="button" onclick="submitForm()" value="Submit">
+</body>
+
+</html>
