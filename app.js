@@ -51,14 +51,12 @@ app.get('/:anything', function (req, res) {
 
 app.post('/api/authenticate', (req, res) => {
   if (!req.body.password || !req.body.timeStamp) {
-    console.log(req.body);
     res.status(401).json({ success: false, reason: 'Invalid request body' });
     return;
   }
   let time = String(req.body.timeStamp);
   if (auth.correctPassword(req.body.password, time)) {
     let tok = auth.nextToken(time);
-    console.log(tok);
     auth.registerToken(tok);
     res.cookie('sat', tok, {
       expires: new Date(Date.now() + auth.TOKEN_LIFE_MILLIS)
