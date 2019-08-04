@@ -6,8 +6,8 @@ const io = require('socket.io')(server);
 const Room = require('./room.js');
 const bp = require('body-parser');
 const cookieParser = require('cookie-parser');
+const auth = require('./auth.js');
 const { randomRoomString, getLocalIP, trimAddress } = require('./utils.js');
-const { validToken, nextToken, registerToken, correctPassword, sha256hex, TOKEN_LIFE_MILLIS } = require('./auth.js');
 
 const ROOM_KEEP_SECONDS = Number(process.env.ROOM_KEEP_SECONDS) || 15;
 
@@ -56,12 +56,12 @@ app.post('/api/authenticate', (req, res) => {
     return;
   }
   let time = String(req.body.timeStamp);
-  if (correctPassword(req.body.password, time)) {
-    let tok = nextToken(time);
+  if (auth.correctPassword(req.body.password, time)) {
+    let tok = auth.nextToken(time);
     console.log(tok);
-    registerToken(tok);
+    auth.registerToken(tok);
     res.cookie('sat', tok, {
-      expires: new Date(Date.now() + TOKEN_LIFE_MILLIS)
+      expires: new Date(Date.now() + auth.TOKEN_LIFE_MILLIS)
     }).json({ success: true });
   } else {
     res.json({ success: false })
@@ -70,7 +70,7 @@ app.post('/api/authenticate', (req, res) => {
 
 app.get('/room/all', function (req, res) {
   let cookie = req.cookies.sat;
-  if (!validToken(cookie)) {
+  if (!auth.validToken(cookie)) {
     res.status(403).json({ success: false, reason: 'Invalid or not present token' });
     return;
   }
@@ -86,7 +86,7 @@ app.get('/room/all', function (req, res) {
 
 app.get('/api/rooms', (req, res) => {
   let cookie = req.cookies.sat;
-  if (!validToken(cookie)) {
+  if (!auth.validToken(cookie)) {
     res.status(403).json({ success: false, reason: 'Invalid or not present token' });
     return;
   }
@@ -95,7 +95,7 @@ app.get('/api/rooms', (req, res) => {
 
 app.get('/api/rooms/:name', function (req, res) {
   let cookie = req.cookies.sat;
-  if (!validToken(cookie)) {
+  if (!auth.validToken(cookie)) {
     res.status(403).json({ success: false, reason: 'Invalid or not present token' });
     return;
   }

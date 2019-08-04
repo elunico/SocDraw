@@ -10,7 +10,7 @@ const TOKEN_LIFE_MILLIS = 1000 * 60 * 60 * 24;
 
 let tokens = [];
 
-setInterval(() => {
+const TOKEN_CLEANER = setInterval(() => {
   console.log('[-] Pruning expired tokens');
   tokens = tokens.filter(t => t.valid);
 }, TOKEN_LIFE_MILLIS);
@@ -29,7 +29,7 @@ function sha256hex(s) {
 
 function registerToken(t) {
   let o = { token: t, valid: true };
-  setTimeout(() => {
+  o['timer'] = setTimeout(() => {
     console.log('[-] Token expiring');
     o.valid = false;
   }, TOKEN_LIFE_MILLIS);
@@ -46,6 +46,14 @@ function nextToken(timeStamp) {
   return timeStamp + hash.substring(timeStamp.length);
 }
 
+function clobberTokens() {
+  tokens.forEach(t => clearTimeout(t.timer));
+  tokens = [];
+}
+
 module.exports = {
-  correctPassword, registerToken, validToken, nextToken, sha256hex, TOKEN_LIFE_MILLIS
+  correctPassword, registerToken, validToken, nextToken, sha256hex, TOKEN_LIFE_MILLIS,
+
+  // testing 
+  TOKEN_CLEANER, clobberTokens
 };
