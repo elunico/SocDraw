@@ -17,6 +17,14 @@ async function getLocalIP() {
   });
 }
 
+
+function trimAddress(s) {
+  if (s.startsWith('::ffff:')) {
+    return s.substring(7);
+  }
+  return s;
+}
+
 function random(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
@@ -29,4 +37,4 @@ function randomRoomString() {
   return w.join('-');
 }
 
-module.exports = { randomRoomString, getLocalIP }
+module.exports = { randomRoomString, getLocalIP, trimAddress }
