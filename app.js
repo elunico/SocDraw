@@ -4,23 +4,22 @@ const app = express();
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const Room = require('./room.js');
-const utils = require('./utils.js');
+const bp = require('body-parser');
+const cookieParser = require('cookie-parser');
+const auth = require('./auth.js');
+const { randomRoomString, getLocalIP, trimAddress } = require('./utils.js');
 
 const ROOM_KEEP_SECONDS = Number(process.env.ROOM_KEEP_SECONDS) || 15;
 
-String.prototype.trimAddress = function () {
-  if (this.startsWith('::ffff:')) {
-    return this.substring(7);
-  }
-  return this;
-}
+app.use(express.json());
+app.use(cookieParser());
 
 const PORT = process.env.PORT || 8000;
 let listener = server.listen(PORT);
 // app.use(express.static('public'));
 
 (async function () {
-  let address = await utils.getLocalIP();
+  let address = await getLocalIP();
   console.log(`[+] Hosting server on ${address}:${PORT}`);
 })();
 
@@ -35,6 +34,10 @@ app.get('/', function (req, res) {
   res.sendFile(__dirname + '/public/home.html');
 });
 
+app.get('/login', (req, res) => {
+  res.sendFile(__dirname + '/public/login.html');
+});
+
 app.get('/:anything', function (req, res) {
   try {
     let a = fs.openSync(__dirname + '/public/' + req.params.anything, 'r');
@@ -42,6 +45,64 @@ app.get('/:anything', function (req, res) {
     res.sendFile(__dirname + '/public/' + req.params.anything);
   } catch (e) {
     notFound(res);
+  }
+});
+
+
+app.post('/api/authenticate', (req, res) => {
+  if (!req.body.password || !req.body.timeStamp) {
+    res.status(401).json({ success: false, reason: 'Invalid request body' });
+    return;
+  }
+  let time = String(req.body.timeStamp);
+  if (auth.correctPassword(req.body.password, time)) {
+    let tok = auth.nextToken(time);
+    auth.registerToken(tok);
+    res.cookie('sat', tok, {
+      expires: new Date(Date.now() + auth.TOKEN_LIFE_MILLIS)
+    }).json({ success: true });
+  } else {
+    res.json({ success: false })
+  }
+});
+
+app.get('/room/all', function (req, res) {
+  let cookie = req.cookies.sat;
+  if (!auth.validToken(cookie)) {
+    res.status(403).json({ success: false, reason: 'Invalid or not present token' });
+    return;
+  }
+  res.write('<html><head><title>All Rooms</title></head><body>');
+  res.write('<h1>All rooms that exist</h1><ol>');
+  for (let roomName of Object.keys(rooms)) {
+    res.write(`<li><a href="/api/rooms/${roomName}">${roomName}</a>  `);
+    res.write(`[clients: ${rooms[roomName].numClients()}]</li>`);
+  }
+  res.write('</ol></body></html>');
+  res.end();
+});
+
+app.get('/api/rooms', (req, res) => {
+  let cookie = req.cookies.sat;
+  if (!auth.validToken(cookie)) {
+    res.status(403).json({ success: false, reason: 'Invalid or not present token' });
+    return;
+  }
+  res.status(200).json(rooms);
+});
+
+app.get('/api/rooms/:name', function (req, res) {
+  let cookie = req.cookies.sat;
+  if (!auth.validToken(cookie)) {
+    res.status(403).json({ success: false, reason: 'Invalid or not present token' });
+    return;
+  }
+  let room = rooms[req.params.name];
+  if (!room) {
+    notFound(res);
+  } else {
+    let data = previousData[room.name];
+    res.json(data);
   }
 });
 
@@ -56,7 +117,7 @@ app.get('/libraries/:anything', function (req, res) {
 });
 
 app.get('/room/new', function (req, res) {
-  let roomName = utils.randomRoomString();
+  let roomName = randomRoomString();
   rooms[roomName] = new Room(roomName);
   res.redirect(`/room/in/${roomName}`);
 });
@@ -74,7 +135,7 @@ app.get('/room/in/:w1', function (req, res) {
 });
 
 io.on('connection', (socket) => {
-  console.log(`[+] Connecting to client ${socket.id} at ${socket.handshake.address.trimAddress()}`);
+  console.log(`[+] Connecting to client ${socket.id} at ${trimAddress(socket.handshake.address)}`);
   socket.on('needs assignment', function (data) {
     if (rooms[data.room]) {
       socketJoinRoom(socket, data.room);
@@ -125,7 +186,7 @@ function socketJoinRoom(socket, roomName) {
     previousData[roomName] = [];
   });
   socket.on('disconnect', function (data) {
-    console.log(`[-] Client ${socket.id} disconnecting from ${socket.handshake.address.trimAddress()}`);
+    console.log(`[-] Client ${socket.id} disconnecting from ${trimAddress(socket.handshake.address)}`);
     let room = rooms[socket.sd_roomName];
     if (room) {
       console.log(`[-] Removing client ${socket.id} from room ${room.name}`);

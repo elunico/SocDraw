@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-
 let pinkButton;
 let redButton;
 let blueButton;
@@ -122,8 +121,10 @@ function registerHandlers() {
       imageP.html('');
     } else {
       saveButton.html('Hide Image');
-      let url = canvas.elt.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-      imageP.html('The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.');
+      let url = canvas.elt.toDataURL('image/png')
+        .replace('image/png', 'image/octet-stream');
+      imageP.html(
+        'The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.');
       let place = select('#save-img');
       place.elt.src = url;
       place.elt.removeAttribute('hidden');
@@ -133,7 +134,8 @@ function registerHandlers() {
 
   function colorChanger(p5btn, colorName, colorArray) {
     if (p5btn) {
-      p5btn.style('color', `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`);
+      p5btn.style(
+        'color', `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`);
     }
     return () => {
       currentColor = colorName;
@@ -143,7 +145,8 @@ function registerHandlers() {
       redSlider.value(color[0]);
       greenSlider.value(color[1]);
       blueSlider.value(color[2]);
-      customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+      customColorP.style(
+        'background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
     };
   }
 
@@ -151,10 +154,13 @@ function registerHandlers() {
   redButton.mousePressed(colorChanger(redButton, 'red', [255, 0, 0]));
   blueButton.mousePressed(colorChanger(blueButton, 'blue', [0, 0, 255]));
   greenButton.mousePressed(colorChanger(greenButton, 'green', [0, 255, 0]));
-  yellowButton.mousePressed(colorChanger(yellowButton, 'yellow', [255, 255, 0]));
+  yellowButton.mousePressed(
+    colorChanger(yellowButton, 'yellow', [255, 255, 0]));
   indigoButton.mousePressed(colorChanger(indigoButton, 'indigo', [75, 0, 130]));
-  purpleButton.mousePressed(colorChanger(purpleButton, 'purple', [255, 0, 255]));
-  orangeButton.mousePressed(colorChanger(orangeButton, 'orange', [252, 121, 13]));
+  purpleButton.mousePressed(
+    colorChanger(purpleButton, 'purple', [255, 0, 255]));
+  orangeButton.mousePressed(
+    colorChanger(orangeButton, 'orange', [252, 121, 13]));
   blackButton.mousePressed(colorChanger(blackButton, 'black', [0, 0, 0]));
   brownButton.mousePressed(colorChanger(brownButton, 'brown', [105, 64, 6]));
   eraserButton.mousePressed(colorChanger(null, 'eraser', [255, 255, 255]));
@@ -215,7 +221,8 @@ function draw() {
     let green = greenSlider.value();
     let blue = blueSlider.value();
     color = [red, green, blue];
-    customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+    customColorP.style(
+      'background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
     fill(...color);
     stroke(...color);
   }
@@ -251,7 +258,7 @@ function floodFill(x, y, color, base, options) {
     canvasHistory.willModify();
   }
   let stack = [];
-  stack.push({ x, y });
+  stack.push({x, y});
   while (stack.length != 0) {
     let coord = stack.pop();
     let x = coord.x;
@@ -268,19 +275,19 @@ function floodFill(x, y, color, base, options) {
     }
 
     if (x < width && colorsEqual(pixels, x + 1, y, base)) {
-      stack.push({ x: x + 1, y: y });
+      stack.push({x: x + 1, y: y});
       // floodFill(x + 1, y, color, base);
     }
     if (x >= 0 && colorsEqual(pixels, x - 1, y, base)) {
-      stack.push({ x: x - 1, y: y });
+      stack.push({x: x - 1, y: y});
       // floodFill(x - 1, y, color, base);
     }
     if (y < height && colorsEqual(pixels, x, y + 1, base)) {
-      stack.push({ x: x, y: y + 1 });
+      stack.push({x: x, y: y + 1});
       // floodFill(x, y, color, base);
     }
     if (y >= 0 && colorsEqual(pixels, x, y - 1, base)) {
-      stack.push({ x: x, y: y - 1 });
+      stack.push({x: x, y: y - 1});
       // floodFill(x, y - 1, color, base);
     }
   }
@@ -293,7 +300,7 @@ function canvasCoordinates(event) {
   let scrollY = window.scrollY;
   let x = event.x - canvasOffsetLeft + scrollX;
   let y = event.y - canvasOffsetTop + scrollY;
-  return { x, y };
+  return {x, y};
 }
 
 function colorAt(x, y) {
@@ -333,7 +340,7 @@ function drawIncomingData(data, options) {
   color = data.color;
   fill(...color);
   stroke(...color);
-  let p = drawData(path, { transient: options.transient });
+  let p = drawData(path, {transient: options.transient});
   path = p;
   color = oldColor;
   lineWidth = oldWidth;
@@ -345,7 +352,8 @@ function clearCanvas(options) {
   options = options || {};
   if (firstClear && !options.force) {
     firstClear = false;
-    let doClear = confirm('Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
+    let doClear = confirm(
+      'Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
     if (!doClear) {
       return false;
     }
@@ -373,7 +381,7 @@ function drawData(path, options) {
 
   ellipse(x, y, lineWidth, lineWidth);
 
-  return { lastX: x, lastY: y };
+  return {lastX: x, lastY: y};
 }
 
 function mouseDragged(event) {
@@ -381,18 +389,13 @@ function mouseDragged(event) {
     return;
   }
 
-  let { x, y } = canvasCoordinates(event);
+  let {x, y} = canvasCoordinates(event);
   path.x = x;
   path.y = y;
 
   let last = drawData(path);
-  let mouseData = {
-    source: id,
-    path: path,
-    color: color,
-    width: lineWidth,
-    type: 'paint'
-  };
+  let mouseData =
+      {source: id, path: path, color: color, width: lineWidth, type: 'paint'};
   socket.emit('mouse pressed event', mouseData);
   path.last.x = last.lastX;
   path.last.y = last.lastY;
@@ -402,7 +405,7 @@ function mouseDragged(event) {
 function mouseReleased(event) {
   if (event.target == canvas.elt) {
     canvasHistory.didModify();
-    path.last = { x: undefined, y: undefined };
+    path.last = {x: undefined, y: undefined};
     socket.emit('mouse released', {});
   }
 }
@@ -411,7 +414,7 @@ function mouseReleased(event) {
 function touchEnd(event) {
   if (event.target == canvas.elt) {
     canvasHistory.didModify();
-    path.last = { x: undefined, y: undefined };
+    path.last = {x: undefined, y: undefined};
     socket.emit('mouse released', {});
   }
 }
@@ -420,9 +423,7 @@ function eventFromTouchEvent(e) {
   let touch = e.targetTouches[0];
   let x = touch.clientX;
   let y = touch.clientY;
-  return {
-    x: x, y: y, target: e.target
-  };
+  return {x: x, y: y, target: e.target};
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -437,8 +438,10 @@ function touchMoved(e) {
 
 
 try {
-  module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
+  module.exports = {colorsEqual, eventFromTouchEvent, floodFill};
 } catch (e) {
-  if (e instanceof ReferenceError);
-  else throw e;
+  if (e instanceof ReferenceError)
+    ;
+  else
+    throw e;
 }
