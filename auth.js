@@ -47,13 +47,22 @@ function nextToken(timeStamp) {
 }
 
 function clobberTokens() {
-  tokens.forEach(t => clearTimeout(t.timer));
+  tokens.forEach(t => {
+    t.valid = false;
+    clearTimeout(t.timer);
+  });
   tokens = [];
 }
 
 module.exports = {
-  correctPassword, registerToken, validToken, nextToken, sha256hex, TOKEN_LIFE_MILLIS,
+  correctPassword,
+  registerToken,
+  validToken,
+  nextToken,
+  sha256hex,
+  TOKEN_LIFE_MILLIS,
 
-  // testing 
-  TOKEN_CLEANER, clobberTokens
+  // testing
+  TOKEN_CLEANER,
+  clobberTokens
 };

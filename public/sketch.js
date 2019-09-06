@@ -258,7 +258,7 @@ function floodFill(x, y, color, base, options) {
     canvasHistory.willModify();
   }
   let stack = [];
-  stack.push({x, y});
+  stack.push({ x, y });
   while (stack.length != 0) {
     let coord = stack.pop();
     let x = coord.x;
@@ -275,19 +275,19 @@ function floodFill(x, y, color, base, options) {
     }
 
     if (x < width && colorsEqual(pixels, x + 1, y, base)) {
-      stack.push({x: x + 1, y: y});
+      stack.push({ x: x + 1, y: y });
       // floodFill(x + 1, y, color, base);
     }
     if (x >= 0 && colorsEqual(pixels, x - 1, y, base)) {
-      stack.push({x: x - 1, y: y});
+      stack.push({ x: x - 1, y: y });
       // floodFill(x - 1, y, color, base);
     }
     if (y < height && colorsEqual(pixels, x, y + 1, base)) {
-      stack.push({x: x, y: y + 1});
+      stack.push({ x: x, y: y + 1 });
       // floodFill(x, y, color, base);
     }
     if (y >= 0 && colorsEqual(pixels, x, y - 1, base)) {
-      stack.push({x: x, y: y - 1});
+      stack.push({ x: x, y: y - 1 });
       // floodFill(x, y - 1, color, base);
     }
   }
@@ -300,7 +300,7 @@ function canvasCoordinates(event) {
   let scrollY = window.scrollY;
   let x = event.x - canvasOffsetLeft + scrollX;
   let y = event.y - canvasOffsetTop + scrollY;
-  return {x, y};
+  return { x, y };
 }
 
 function colorAt(x, y) {
@@ -340,7 +340,7 @@ function drawIncomingData(data, options) {
   color = data.color;
   fill(...color);
   stroke(...color);
-  let p = drawData(path, {transient: options.transient});
+  let p = drawData(path, { transient: options.transient });
   path = p;
   color = oldColor;
   lineWidth = oldWidth;
@@ -381,7 +381,7 @@ function drawData(path, options) {
 
   ellipse(x, y, lineWidth, lineWidth);
 
-  return {lastX: x, lastY: y};
+  return { lastX: x, lastY: y };
 }
 
 function mouseDragged(event) {
@@ -389,13 +389,15 @@ function mouseDragged(event) {
     return;
   }
 
-  let {x, y} = canvasCoordinates(event);
+  let { x, y } = canvasCoordinates(event);
   path.x = x;
   path.y = y;
 
   let last = drawData(path);
   let mouseData =
-      {source: id, path: path, color: color, width: lineWidth, type: 'paint'};
+      { 
+source: id, path: path, color: color, width: lineWidth, type: 'paint'
+ };
   socket.emit('mouse pressed event', mouseData);
   path.last.x = last.lastX;
   path.last.y = last.lastY;
@@ -405,7 +407,7 @@ function mouseDragged(event) {
 function mouseReleased(event) {
   if (event.target == canvas.elt) {
     canvasHistory.didModify();
-    path.last = {x: undefined, y: undefined};
+    path.last = { x: undefined, y: undefined };
     socket.emit('mouse released', {});
   }
 }
@@ -414,7 +416,7 @@ function mouseReleased(event) {
 function touchEnd(event) {
   if (event.target == canvas.elt) {
     canvasHistory.didModify();
-    path.last = {x: undefined, y: undefined};
+    path.last = { x: undefined, y: undefined };
     socket.emit('mouse released', {});
   }
 }
@@ -423,7 +425,9 @@ function eventFromTouchEvent(e) {
   let touch = e.targetTouches[0];
   let x = touch.clientX;
   let y = touch.clientY;
-  return {x: x, y: y, target: e.target};
+  return { 
+x: x, y: y, target: e.target
+ };
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -438,7 +442,9 @@ function touchMoved(e) {
 
 
 try {
-  module.exports = {colorsEqual, eventFromTouchEvent, floodFill};
+  module.exports = {
+ colorsEqual, eventFromTouchEvent, floodFill
+ };
 } catch (e) {
   if (e instanceof ReferenceError)
     ;

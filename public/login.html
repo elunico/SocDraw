@@ -16,6 +16,7 @@
 
     function submitForm() {
       let password = document.querySelector("#password-field").value;
+      // TODO: hash with salt timeStamp
       let body = JSON.stringify({ password: password, timeStamp: (new Date()).getTime() });
       fetch('/api/authenticate', {
         headers: {

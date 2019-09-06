@@ -12,6 +12,28 @@
         }
     },
     "rules": {
+        "brace-style": [
+            "error",
+            "1tbs"
+        ],
+        "object-curly-spacing": [
+            "error",
+            "always"
+        ],
+        "object-curly-newline": [
+            "error",
+            {
+                "multiline": true,
+                "minProperties": 3
+                // "consistent": true
+            }
+        ],
+        "object-property-newline": [
+            "error",
+            {
+                "allowAllPropertiesOnSameLine": true
+            }
+        ],
         "indent": [
             "error",
             2
