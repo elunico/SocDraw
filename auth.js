@@ -43,7 +43,7 @@ function validToken(c) {
 function nextToken(timeStamp) {
   timeStamp = String(timeStamp);
   let hash = sha256hex(PASSPHRASE + timeStamp);
-  return timeStamp + hash.substring(timeStamp.length);
+  return timeStamp + hash;
 }
 
 function clobberTokens() {
