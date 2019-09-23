@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const uuid = require('uuid/v4');
 
 const PASSPHRASE = process.env.PASSPHRASE;
 
@@ -16,14 +17,19 @@ const TOKEN_CLEANER = setInterval(() => {
 }, TOKEN_LIFE_MILLIS);
 
 function correctPassword(password, timeStamp) {
+  let mult = Math.round(crypto.randomBytes(1)[0] / 32);
   let time = String(timeStamp);
-  let userHash = sha256hex(password + time);
-  let myHash = sha256hex(PASSPHRASE + time);
+  let userHash = sha256hex(password + time, 750 * mult);
+  let myHash = sha256hex(PASSPHRASE + time, 750 * mult);
   return userHash === myHash;
 }
 
-function sha256hex(s) {
-  return crypto.createHash('sha256').update(s).digest('hex');
+function sha256hex(s, times) {
+  times = times || 1;
+  let h = s;
+  for (let i = 0; i < times; i++)
+    h = crypto.createHash('sha256').update(h).digest('hex');
+  return h;
 }
 
 
@@ -40,10 +46,8 @@ function validToken(c) {
   return tokens.filter(t => t.token == c && t.valid).length > 0;
 }
 
-function nextToken(timeStamp) {
-  timeStamp = String(timeStamp);
-  let hash = sha256hex(PASSPHRASE + timeStamp);
-  return timeStamp + hash;
+function nextToken() {
+  return uuid();
 }
 
 function clobberTokens() {
