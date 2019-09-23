@@ -70,8 +70,7 @@ app.post('/api/authenticate', (req, res) => {
 app.get('/room/all', function (req, res) {
   let cookie = req.cookies.sat;
   if (!auth.validToken(cookie)) {
-    res.status(401).json(
-      { success: false, reason: 'Invalid or not present token' });
+    res.sendStatus(401);
     return;
   }
   res.write('<html><head><title>All Rooms</title></head><body>');
