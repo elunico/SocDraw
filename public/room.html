@@ -3,7 +3,7 @@
 <head>
   <title></title>
   <!-- <link href="https://fonts.googleapis.com/css?family=Dosis:700,800&display=swap" rel="stylesheet"> -->
-  <link href="https://fonts.googleapis.com/css?family=Barlow:400,700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css?family=Zilla+Slab:400,700&display=swap" rel="stylesheet">
   <script src="/socket.io/socket.io.js"></script>
   <script>
     if (window.location.hostname == 'localhost') {
@@ -95,13 +95,13 @@
 
   <style>
     body>* {
-      font-family: "Barlow", sans-serif;
+      font-family: "Zilla Slab", sans-serif;
       margin: 4px;
     }
 
     h1 {
       font-size: 1.75em;
-      font-family: "Barlow", sans-serif;
+      font-family: "Zilla Slab", sans-serif;
       font-weight: 700;
     }
 
@@ -110,7 +110,7 @@
       border: 1px solid #aaa;
       height: 38px;
       font-size: 0.8em;
-      font-family: "Barlow", sans-serif;
+      font-family: "Zilla Slab", sans-serif;
       text-transform: capitalize;
       font-weight: 700;
       /*
@@ -152,20 +152,20 @@
         if (e.target == canvas.elt)
           e.preventDefault();
       }, {
-          passive: false
-        });
+        passive: false
+      });
       window.addEventListener("touchend", function (e) {
         if (e.target == canvas.elt)
           e.preventDefault();
       }, {
-          passive: false
-        });
+        passive: false
+      });
       window.addEventListener("touchmove", function (e) {
         if (e.target == canvas.elt)
           e.preventDefault();
       }, {
-          passive: false
-        });
+        passive: false
+      });
     })();
 
     let roomName = document.querySelector('#room-name');
