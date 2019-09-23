@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 /* eslint-disable no-undef */
-
 let pinkButton;
 let redButton;
 let blueButton;
@@ -122,8 +121,10 @@ function registerHandlers() {
       imageP.html('');
     } else {
       saveButton.html('Hide Image');
-      let url = canvas.elt.toDataURL('image/png').replace('image/png', 'image/octet-stream');
-      imageP.html('The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.');
+      let url = canvas.elt.toDataURL('image/png')
+        .replace('image/png', 'image/octet-stream');
+      imageP.html(
+        'The image you want to save appears above the canvas. Right click (or tap and hold) and choose the save option.<br> Press the hide image button when done.');
       let place = select('#save-img');
       place.elt.src = url;
       place.elt.removeAttribute('hidden');
@@ -133,7 +134,8 @@ function registerHandlers() {
 
   function colorChanger(p5btn, colorName, colorArray) {
     if (p5btn) {
-      p5btn.style('color', `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`);
+      p5btn.style(
+        'color', `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`);
     }
     return () => {
       currentColor = colorName;
@@ -143,7 +145,8 @@ function registerHandlers() {
       redSlider.value(color[0]);
       greenSlider.value(color[1]);
       blueSlider.value(color[2]);
-      customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+      customColorP.style(
+        'background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
     };
   }
 
@@ -151,10 +154,13 @@ function registerHandlers() {
   redButton.mousePressed(colorChanger(redButton, 'red', [255, 0, 0]));
   blueButton.mousePressed(colorChanger(blueButton, 'blue', [0, 0, 255]));
   greenButton.mousePressed(colorChanger(greenButton, 'green', [0, 255, 0]));
-  yellowButton.mousePressed(colorChanger(yellowButton, 'yellow', [255, 255, 0]));
+  yellowButton.mousePressed(
+    colorChanger(yellowButton, 'yellow', [255, 255, 0]));
   indigoButton.mousePressed(colorChanger(indigoButton, 'indigo', [75, 0, 130]));
-  purpleButton.mousePressed(colorChanger(purpleButton, 'purple', [255, 0, 255]));
-  orangeButton.mousePressed(colorChanger(orangeButton, 'orange', [252, 121, 13]));
+  purpleButton.mousePressed(
+    colorChanger(purpleButton, 'purple', [255, 0, 255]));
+  orangeButton.mousePressed(
+    colorChanger(orangeButton, 'orange', [252, 121, 13]));
   blackButton.mousePressed(colorChanger(blackButton, 'black', [0, 0, 0]));
   brownButton.mousePressed(colorChanger(brownButton, 'brown', [105, 64, 6]));
   eraserButton.mousePressed(colorChanger(null, 'eraser', [255, 255, 255]));
@@ -215,7 +221,8 @@ function draw() {
     let green = greenSlider.value();
     let blue = blueSlider.value();
     color = [red, green, blue];
-    customColorP.style('background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
+    customColorP.style(
+      'background-color', `rgb(${color[0]}, ${color[1]}, ${color[2]})`);
     fill(...color);
     stroke(...color);
   }
@@ -345,7 +352,8 @@ function clearCanvas(options) {
   options = options || {};
   if (firstClear && !options.force) {
     firstClear = false;
-    let doClear = confirm('Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
+    let doClear = confirm(
+      'Warning: Clearing the canvas cannot be undone.\nContinue Clearing Canvas? (You will not be asked again)');
     if (!doClear) {
       return false;
     }
@@ -386,13 +394,10 @@ function mouseDragged(event) {
   path.y = y;
 
   let last = drawData(path);
-  let mouseData = {
-    source: id,
-    path: path,
-    color: color,
-    width: lineWidth,
-    type: 'paint'
-  };
+  let mouseData =
+      { 
+source: id, path: path, color: color, width: lineWidth, type: 'paint'
+ };
   socket.emit('mouse pressed event', mouseData);
   path.last.x = last.lastX;
   path.last.y = last.lastY;
@@ -420,9 +425,9 @@ function eventFromTouchEvent(e) {
   let touch = e.targetTouches[0];
   let x = touch.clientX;
   let y = touch.clientY;
-  return {
-    x: x, y: y, target: e.target
-  };
+  return { 
+x: x, y: y, target: e.target
+ };
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -437,8 +442,12 @@ function touchMoved(e) {
 
 
 try {
-  module.exports = { colorsEqual, eventFromTouchEvent, floodFill };
+  module.exports = {
+ colorsEqual, eventFromTouchEvent, floodFill
+ };
 } catch (e) {
-  if (e instanceof ReferenceError);
-  else throw e;
+  if (e instanceof ReferenceError)
+    ;
+  else
+    throw e;
 }

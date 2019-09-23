@@ -37,10 +37,11 @@ class CanvasHistory {
    * this could be remedied by polling a random client and caching the
    * canvas view on the server in case someone connects to a room of 0 people.
    * This would not be sufficient for active rooms with members since
-   * the person receiving the cached copy would lacking some data, so this could only be used
-   * when a 0 room is joined. A further alternative that is perhaps *better*
-   * is to take the canvas image data from the last client to disconnect
-   * and hold onto it incase anyone else connections and then trash it.
+   * the person receiving the cached copy would lacking some data, so this could
+   * only be used when a 0 room is joined. A further alternative that is perhaps
+   * *better* is to take the canvas image data from the last client to
+   * disconnect and hold onto it incase anyone else connections and then trash
+   * it.
    *
    *
    * the willModify captures the imageData of the ctx of
@@ -58,10 +59,12 @@ class CanvasHistory {
     if (!this.inProgress) {
       this.last = this.states.length - 1;
       this.inProgress = true;
-      // this.timer = setTimeout(this.didModify.bind(this), this.timeStepMillis);
+      // this.timer = setTimeout(this.didModify.bind(this),
+      // this.timeStepMillis);
     }
     let ctx = this.canvas.elt.getContext('2d');
-    let imageData = ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+    let imageData =
+        ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
     this.states.push(imageData);
   }
 
@@ -73,22 +76,22 @@ class CanvasHistory {
     // }
     this.inProgress = false;
     /* this.last is the last element before the impending modification
-    * this.last + 1 would start deleting at the first element of the impending
-    * (or currently running) modification
-    * this.last + 2 starts deleting from the second element. Since splice
-    * ranges include the first element we have to start with the element after
-    * the first element in the new modification
-    * Then since we go two past the last, we delete the length of the array
-    * minute where we started (this.last) minus 2
-    */
+     * this.last + 1 would start deleting at the first element of the impending
+     * (or currently running) modification
+     * this.last + 2 starts deleting from the second element. Since splice
+     * ranges include the first element we have to start with the element after
+     * the first element in the new modification
+     * Then since we go two past the last, we delete the length of the array
+     * minute where we started (this.last) minus 2
+     */
     this.states.splice(this.last + 2, this.states.length - this.last - 2);
     this.limitSize();
   }
 
   limitSize() {
     if (this.states.length > this.maxStates) {
-      let i = 0;
-      this.states = this.states.filter(() => i++ < this.maxStates);
+      let i = this.states.length;
+      this.states = this.states.filter(() => i-- <= this.maxStates);
     }
   }
 
@@ -111,13 +114,13 @@ class CanvasHistory {
     this.last = -1;
     this.timer = null;
   }
-
-
 }
 
 try {
   module.exports = CanvasHistory;
 } catch (e) {
-  if (e instanceof ReferenceError);
-  else throw e;
+  if (e instanceof ReferenceError)
+    ;
+  else
+    throw e;
 }
