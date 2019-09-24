@@ -50,7 +50,18 @@ function nextToken() {
   return uuid();
 }
 
-function clobberTokens() {
+function clobberToken(token) {
+  for (let t of tokens) {
+    if (t.token == token) {
+      t.valid = false;
+      clearTimeout(t.timer);
+      return true;
+    }
+  }
+  return false;
+}
+
+function clobberAllTokens() {
   tokens.forEach(t => {
     t.valid = false;
     clearTimeout(t.timer);
@@ -64,9 +75,10 @@ module.exports = {
   validToken,
   nextToken,
   sha256hex,
+  clobberToken,
   TOKEN_LIFE_MILLIS,
 
   // testing
   TOKEN_CLEANER,
-  clobberTokens
+  clobberAllTokens
 };

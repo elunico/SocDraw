@@ -39,6 +39,18 @@ app.get('/login', (req, res) => {
   res.sendFile(__dirname + '/public/login.html');
 });
 
+app.get('/logout', (req, res) => {
+  let token = req.cookies.sat;
+  if (auth.validToken(token)) {
+    let result = auth.clobberToken(token);
+    if (result) {
+      res.status(200).sendFile(__dirname + '/private/logout.html');
+      return;
+    }
+  }
+  res.status(401).sendFile(__dirname + '/private/invalidSession.html');
+});
+
 app.get('/:anything', function (req, res) {
   try {
     let a = fs.openSync(__dirname + '/public/' + req.params.anything, 'r');
