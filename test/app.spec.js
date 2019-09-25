@@ -8,10 +8,12 @@ const request = require('supertest');
 const { expect, chaiRequest } = require('chai');
 const Room = require('../room');
 const fs = require('fs');
-const { listener, rooms, socketJoinRoom } = require('../app');
+const {
+  listener, rooms, socketJoinRoom
+} = require('../app');
 
 describe('app.js', function () {
-  describe('listener', function () {
+  describe('integration with routes.js', function () {
     this.slow(75);
     after(() => listener.close());
 
@@ -84,7 +86,7 @@ describe('app.js', function () {
     });
   });
 
-  describe('auth and api', function () {
+  describe('integration with routes.js and authentication', function () {
     it('should return 403 Forebidden with no token on rooms', function (done) {
       request(listener).get('/api/rooms').expect(403, done);
     });
@@ -120,7 +122,7 @@ describe('app.js', function () {
         });
     });
 
-    // chai not supertest http ? 
+    // chai not supertest http ?
     it('should authenticate successfully with correct credentials', function (done) {
       let loginSession = request.agent(listener);
       loginSession.post('/api/authenticate')
@@ -135,7 +137,7 @@ describe('app.js', function () {
     });
   });
 
-  describe('socket', function () {
+  describe('integration with sockets.js', function () {
     this.slow(15);
     class DummySocket {
       constructor() {
@@ -157,14 +159,14 @@ describe('app.js', function () {
 
     it('should know room name after joining room', function (done) {
       let socket = new DummySocket();
-      socketJoinRoom(socket, 'test room');
+      socketJoinRoom(socket, 'test room', {}, []);
       expect(socket.roomName).to.equal('test room');
       done();
     });
 
     it('should have all events registered after joining room', function (done) {
       let socket = new DummySocket();
-      socketJoinRoom(socket, 'test room');
+      socketJoinRoom(socket, 'test room', {}, []);
       const events = ['mouse pressed event', 'setup done', 'mouse released', 'flood fill', 'undo', 'clear canvas', 'disconnect'];
       for (let event of events) {
         expect(socket.hasCallbackFor(event)).to.be.true;

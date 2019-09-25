@@ -9,7 +9,8 @@
     "parserOptions": {
         "ecmaFeatures": {
             "jsx": true
-        }
+        },
+        "sourceType": "module"
     },
     "rules": {
         "brace-style": [
