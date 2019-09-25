@@ -24,6 +24,21 @@ function correctPassword(password, timeStamp) {
   return userHash === myHash;
 }
 
+function cookieExpirationFrom(time) {
+  return new Date(time + TOKEN_LIFE_MILLIS);
+}
+
+function newAuthCookie() {
+  let tok = nextToken();
+  registerToken(tok);
+  let cookieData = {
+    name: 'sat',
+    value: tok,
+    options: { expires: cookieExpirationFrom(Date.now()) }
+  };
+  return cookieData;
+}
+
 function sha256hex(s, times) {
   times = times || 1;
   let h = s;
@@ -71,14 +86,15 @@ function clobberAllTokens() {
 
 module.exports = {
   correctPassword,
-  registerToken,
+  newAuthCookie,
   validToken,
-  nextToken,
   sha256hex,
   clobberToken,
   TOKEN_LIFE_MILLIS,
 
   // testing
   TOKEN_CLEANER,
-  clobberAllTokens
+  clobberAllTokens,
+  registerToken,
+  nextToken
 };

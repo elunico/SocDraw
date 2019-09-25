@@ -69,11 +69,8 @@ app.post('/api/authenticate', (req, res) => {
   }
   let time = String(req.body.timeStamp);
   if (auth.correctPassword(req.body.password, time)) {
-    let tok = auth.nextToken(time);
-    auth.registerToken(tok);
-    res.cookie(
-      'sat', tok, { expires: new Date(Date.now() + auth.TOKEN_LIFE_MILLIS) })
-      .json({ success: true });
+    let { name, value, options } = auth.newAuthCookie();
+    res.cookie(name, value, options).json({ success: true });
   } else {
     res.json({ success: false })
   }
