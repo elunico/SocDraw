@@ -24,14 +24,18 @@ describe('room.js', function () {
   it('should show room is going to be deleted', function (done) {
     after(() => clearTimeout(room.deleteTimer));
     let room = new Room();
-    room.deleteTimer = setTimeout(() => { throw 'Should be cancelled'; }, 10000);
+    room.deleteTimer = setTimeout(() => {
+      throw 'Should be cancelled';
+    }, 10000);
     expect(room.willBeDeleted()).to.be.true;
     done();
   });
 
   it('should show room will not be deleted anymore', function (done) {
     let room = new Room();
-    room.deleteTimer = setTimeout(() => { throw 'Should be cancelled'; }, 10000);
+    room.deleteTimer = setTimeout(() => {
+      throw 'Should be cancelled';
+    }, 10000);
     room.cancelDeletion();
     expect(room.willBeDeleted()).to.be.false;
     expect(room.deleteTimer).to.be.null;
@@ -48,6 +52,11 @@ describe('room.js', function () {
     done();
   });
 
+  it('should throw when adding two clients with the same id', (done) => {
+    let room = new Room();
+    room.addClient({ id: 0, other: 'dummy' });
+    expect(() => room.addClient({ id: 0, other: 'dummy' })).to.throw;
+    done();
+  });
+
 });
-
-

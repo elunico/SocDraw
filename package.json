@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "nyc mocha --recursive",
+    "test": "mocha --recursive",
+    "coverage": "nyc --reporter=lcov --reporter=text npm run test",
     "start": "node app.js",
     "dev": "node_modules\\.bin\\nodemon app.js"
   },

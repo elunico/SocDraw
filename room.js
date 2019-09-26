@@ -41,7 +41,7 @@ class Room {
 
   addClient(socket) {
     if (this.clients.filter(s => s.id == socket.id).length > 0) {
-      throw 'No Duplicate Clients!';
+      throw new Error('No Duplicate Clients!');
     }
     this.clients.push({ socket: socket, id: socket.id });
   }

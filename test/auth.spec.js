@@ -76,4 +76,27 @@ describe('auth.js', function () {
     expect(x.length).to.equal(36);
     done();
   });
+
+  it('should invalidate registered tokens when calling clobberToken', (done) => {
+    let { value: token } = auth.newAuthCookie();
+
+    expect(auth.validToken(token)).to.be.true;
+
+    expect(auth.clobberToken(token)).to.be.true;
+
+    expect(auth.validToken(token)).to.be.false;
+    done();
+
+  });
+
+  it('should not clobber anything if token is invalid', (done) => {
+    let { value: token } = auth.newAuthCookie();
+
+    expect(auth.validToken(token)).to.be.true;
+
+    expect(auth.clobberToken('does not exist')).to.be.false;
+
+    expect(auth.validToken(token)).to.be.true;
+    done();
+  });
 });

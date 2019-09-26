@@ -7,6 +7,7 @@ const Room = require('./room.js');
 function notFound(res) {
   res.status(404).send('<h1>Error 404: Not Found!</h1>');
 }
+
 function setUpRoutes(app, rooms, previousData) {
   app.get('/', function (req, res) {
     res.sendFile(__dirname + '/public/home.html');
@@ -40,7 +41,7 @@ function setUpRoutes(app, rooms, previousData) {
 
 
   app.post('/api/authenticate', (req, res) => {
-    if (!req.body.password || !req.body.timeStamp) {
+    if (!req.body || !req.body.password || !req.body.timeStamp) {
       res.status(400).json({ success: false, reason: 'Invalid request body' });
       return;
     }
