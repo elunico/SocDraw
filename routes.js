@@ -9,7 +9,7 @@ function notFound(res) {
 }
 
 function setUpRoutes(app, rooms, previousData) {
-  app.get('/', function (req, res) {
+  app.get('/', (req, res) => {
     res.sendFile(__dirname + '/public/home.html');
   });
 
@@ -29,7 +29,7 @@ function setUpRoutes(app, rooms, previousData) {
     res.status(401).sendFile(__dirname + '/private/invalidSession.html');
   });
 
-  app.get('/:anything', function (req, res) {
+  app.get('/:anything', (req, res) => {
     try {
       let a = fs.openSync(__dirname + '/public/' + req.params.anything, 'r');
       fs.closeSync(a);
@@ -66,7 +66,7 @@ function setUpRoutes(app, rooms, previousData) {
     res.status(200).json(rooms);
   });
 
-  app.get('/api/rooms/:name', function (req, res) {
+  app.get('/api/rooms/:name', (req, res) => {
     let cookie = req.cookies.sat;
     if (!auth.validToken(cookie)) {
       res.status(403).json(
@@ -82,7 +82,7 @@ function setUpRoutes(app, rooms, previousData) {
     }
   });
 
-  app.get('/libraries/:anything', function (req, res) {
+  app.get('/libraries/:anything', (req, res) => {
     try {
       let a = fs.openSync(
         __dirname + '/public/libraries/' + req.params.anything, 'r');
@@ -94,7 +94,7 @@ function setUpRoutes(app, rooms, previousData) {
   });
 
 
-  app.get('/room/all', function (req, res) {
+  app.get('/room/all', (req, res) => {
     let cookie = req.cookies.sat;
     if (!auth.validToken(cookie)) {
       res.sendStatus(401);
@@ -110,13 +110,13 @@ function setUpRoutes(app, rooms, previousData) {
     res.end();
   });
 
-  app.get('/room/new', function (req, res) {
+  app.get('/room/new', (req, res) => {
     let roomName = randomRoomString();
     rooms[roomName] = new Room(roomName);
     res.redirect(`/room/in/${roomName}`);
   });
 
-  app.get('/room/in/:w1', function (req, res) {
+  app.get('/room/in/:w1', (req, res) => {
     let room = req.params.w1;
     if (!rooms[room]) {
       res.status(404).sendFile(__dirname + '/public/error.html');

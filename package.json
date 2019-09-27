@@ -4,10 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "mocha --recursive",
+    "devSetup": "set -x PASSPHRASE corisca ; set -x TEST_PASSWORD corsica",
+    "test": "npm run devSetup; mocha --recursive",
     "coverage": "nyc --reporter=lcov --reporter=text npm run test",
-    "start": "node app.js",
-    "dev": "node_modules\\.bin\\nodemon app.js"
+    "start": "npm run devSetup; node app.js"
   },
   "author": "Thomas Povinelli",
   "license": "MIT",

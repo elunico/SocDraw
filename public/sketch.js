@@ -395,9 +395,9 @@ function mouseDragged(event) {
 
   let last = drawData(path);
   let mouseData =
-      { 
-source: id, path: path, color: color, width: lineWidth, type: 'paint'
- };
+  {
+    source: id, path: path, color: color, width: lineWidth, type: 'paint'
+  };
   socket.emit('mouse pressed event', mouseData);
   path.last.x = last.lastX;
   path.last.y = last.lastY;
@@ -425,9 +425,9 @@ function eventFromTouchEvent(e) {
   let touch = e.targetTouches[0];
   let x = touch.clientX;
   let y = touch.clientY;
-  return { 
-x: x, y: y, target: e.target
- };
+  return {
+    x: x, y: y, target: e.target
+  };
 }
 
 // eslint-disable-next-line no-unused-vars
@@ -443,8 +443,8 @@ function touchMoved(e) {
 
 try {
   module.exports = {
- colorsEqual, eventFromTouchEvent, floodFill
- };
+    colorsEqual, eventFromTouchEvent, floodFill
+  };
 } catch (e) {
   if (e instanceof ReferenceError)
     ;
