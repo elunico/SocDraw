@@ -4,8 +4,8 @@ const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const cookieParser = require('cookie-parser');
 const analytics = require('./analytics.js');
-const { socketJoinRoom, socketSetHandlers } = require("./sockets.js");
-const { getLocalIP, trimAddress } = require('./utils.js');
+const { socketSetHandlers } = require("./sockets.js");
+const { getLocalIP } = require('./utils.js');
 const { setUpRoutes } = require('./routes.js');
 
 // space for drawing data and rooms
@@ -44,7 +44,5 @@ socketSetHandlers(io, rooms, previousData);
 
 module.exports = {
   listener,
-  rooms,
-  socketJoinRoom,
-  trimAddress
+  rooms
 };

@@ -8,9 +8,8 @@ const request = require('supertest');
 const { expect, chaiRequest } = require('chai');
 const Room = require('../room');
 const fs = require('fs');
-const {
-  listener, rooms, socketJoinRoom
-} = require('../app');
+const { listener, rooms } = require('../app');
+const { socketJoinRoom } = require('../sockets.js');
 
 describe('app.js', function () {
   describe('integration with routes.js', function () {

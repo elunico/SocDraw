@@ -78,4 +78,4 @@ function socketJoinRoom(socket, roomName, previousData, rooms) {
   });
 }
 
-module.exports = { socketJoinRoom, socketSetHandlers };
+module.exports = { socketSetHandlers, socketJoinRoom };
