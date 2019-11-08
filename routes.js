@@ -3,6 +3,22 @@ const fs = require('fs');
 const auth = require('./auth.js');
 const { randomRoomString } = require('./utils.js');
 const Room = require('./room.js');
+const rateLimit = require('express-rate-limit');
+
+const authenticationLimiter = rateLimit({
+  windowMs: 1000 * 60,// 1 minute
+  max: 5, // start blocking after 5 requests
+  onLimitReached: function (req, res, options) {
+    console.log(`[!] Rate limit on /login reached by ${req.ip}`);
+  }
+});
+const roomDataLimiter = rateLimit({
+  windowMs: 1000 * 30,// 30 seconds
+  max: 50, // start blocking after 5 requests
+  onLimitReached: function (req, res, options) {
+    console.log(`[!] Rate limit on /api/room/:name reached by ${req.ip}`);
+  }
+});
 
 function notFound(res) {
   res.status(404).send('<h1>Error 404: Not Found!</h1>');
@@ -40,7 +56,7 @@ function setUpRoutes(app, rooms, previousData) {
   });
 
 
-  app.post('/api/authenticate', (req, res) => {
+  app.post('/api/authenticate', authenticationLimiter, (req, res) => {
     if (!req.body || !req.body.password || !req.body.timeStamp) {
       res.status(400).json({ success: false, reason: 'Invalid request body' });
       return;
@@ -66,7 +82,7 @@ function setUpRoutes(app, rooms, previousData) {
     res.status(200).json(rooms);
   });
 
-  app.get('/api/rooms/:name', (req, res) => {
+  app.get('/api/rooms/:name', roomDataLimiter, (req, res) => {
     let cookie = req.cookies.sat;
     if (!auth.validToken(cookie)) {
       res.status(403).json(

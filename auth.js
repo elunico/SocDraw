@@ -21,7 +21,7 @@ function correctPassword(password, timeStamp) {
   let time = String(timeStamp);
   let userHash = sha256hex(password + time, 750 * mult);
   let myHash = sha256hex(PASSPHRASE + time, 750 * mult);
-  return userHash === myHash;
+  return userHash === myHash && PASSPHRASE === password;
 }
 
 function cookieExpirationFrom(time) {
