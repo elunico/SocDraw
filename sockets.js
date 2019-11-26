@@ -55,6 +55,7 @@ function socketJoinRoom(socket, roomName, previousData, rooms) {
   });
   socket.on('clear canvas', function (data) {
     socket.to(roomName).emit('clear canvas', {});
+    rooms[roomName].lastCompactedIndex = 0;
     previousData[roomName] = [];
   });
 
