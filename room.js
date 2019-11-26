@@ -3,6 +3,7 @@ class Room {
     this.name = name;
     this.clients = [];
     this.deleteTimer = null;
+    this.lastCompactedIndex = 0;
   }
 
   toJSON() {
