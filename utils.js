@@ -37,4 +37,8 @@ function randomRoomString() {
   return w.join('-');
 }
 
-module.exports = { randomRoomString, getLocalIP, trimAddress }
+function distance(x1, y1, x2, y2) {
+  return Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+}
+
+module.exports = { randomRoomString, getLocalIP, trimAddress, distance }
