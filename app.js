@@ -5,7 +5,7 @@ const io = require('socket.io')(server);
 const cookieParser = require('cookie-parser');
 const analytics = require('./analytics.js');
 const { socketSetHandlers } = require("./sockets.js");
-const { getLocalIP, distance } = require('./utils.js');
+const { getLocalIP, pathDistance } = require('./utils.js');
 const { setUpRoutes } = require('./routes.js');
 
 // space for drawing data and rooms
@@ -13,6 +13,8 @@ const { setUpRoutes } = require('./routes.js');
 // rooms[key1] should be the room corresponding to the data at previousData[key1]
 let previousData = {};
 let rooms = {};
+
+const COMPACTING_INTERVAL_MILLIS = Number(process.env.COMPACTING_INTERVAL_MILLIS) || 2000;
 
 console.log('[+] Beginning path compacting interval')
 setInterval(() => {
@@ -24,7 +26,7 @@ setInterval(() => {
       let thisEvent = roomData[i];
       let nextEvent = roomData[i + 1];
       if (thisEvent.type != 'paint' || nextEvent.type != 'paint') { i++; continue; }
-      if (distance(thisEvent.path.x, thisEvent.path.y, nextEvent.path.x, nextEvent.path.y) < (thisEvent.width / 1.5)) {
+      if (pathDistance(thisEvent.path, nextEvent.path) < (thisEvent.width / 1.5)) {
         roomData.splice(i + 1, 1);
         /*
           if there is an event that is not a paint, then the paths are disjoint
@@ -45,11 +47,11 @@ setInterval(() => {
     }
     rooms[key].lastCompactedIndex = i;
     if (count > 0) {
-      console.log(`[*] Removed ${count} extra path points out of ${roomData.length} total (${((count / roomData.length) * 100).toFixed(2)}%) from room ${key}`)
+      console.log(`[*] Removed ${count} extraneous path points leaving ${roomData.length} points (compacted: ${((count / roomData.length) * 100).toFixed(2)}%) from room ${key}`)
       console.log(`[*] Room ${key} compacted through index ${i}`);
     }
   }
-}, 2000);
+}, COMPACTING_INTERVAL_MILLIS);
 
 // handle api requests and responses
 app.use(express.json());
