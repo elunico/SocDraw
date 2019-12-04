@@ -28,20 +28,21 @@ setInterval(() => {
       if (thisEvent.type != 'paint' || nextEvent.type != 'paint') { i++; continue; }
       if (pathDistance(thisEvent.path, nextEvent.path) < (thisEvent.width / 1.5)) {
         roomData.splice(i + 1, 1);
-        /*
-          if there is an event that is not a paint, then the paths are disjoint
-          so its ok to just advance past them
-          also note that the splice means this might go out of bounds so check for that
-          also also note that we checking the event AFTER nextEvent but since
-          that has already been spliced out of hte array (see above)
-          we use the i+1 index not i+2
-        */
+        /* if there is an event that is not a paint, then the paths are disjoint
+           so its ok to just advance past them
+           also note that the splice means this might go out of bounds so check for that
+           also also note that we checking the event AFTER nextEvent but since
+           that has already been spliced out of hte array (see above)
+           we use the i+1 index not i+2 */
         if (roomData[i + 1] && roomData[i + 1].type == 'paint') {
           roomData[i + 1].path.last.x = thisEvent.path.x
           roomData[i + 1].path.last.y = thisEvent.path.y
         }
         count++;
       } else {
+        // only increment the index if we don't remove an extraneous point
+        // if we do we might want to remove more, so we stay at the thisEvent
+        // event and then see if there are still extraneous points
         i++;
       }
     }
