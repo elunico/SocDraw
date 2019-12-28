@@ -20,6 +20,11 @@ const roomDataLimiter = rateLimit({
   }
 });
 
+function doNotCache(response) {
+  response.header('Cache-Control', 'no-store');
+  return response; 
+}
+
 function notFound(res) {
   res.status(404).send('<h1>Error 404: Not Found!</h1>');
 }
@@ -35,6 +40,7 @@ function setUpRoutes(app, rooms, previousData) {
 
   app.get('/logout', (req, res) => {
     let token = req.cookies.sat;
+    doNotCache(res);
     if (auth.validToken(token)) {
       let result = auth.clobberToken(token);
       if (result) {
@@ -61,6 +67,7 @@ function setUpRoutes(app, rooms, previousData) {
       res.status(400).json({ success: false, reason: 'Invalid request body' });
       return;
     }
+    doNotCache(res);
     let time = String(req.body.timeStamp);
     if (auth.correctPassword(req.body.password, time)) {
       let {
@@ -72,8 +79,9 @@ function setUpRoutes(app, rooms, previousData) {
     }
   });
 
-  app.get('/api/rooms', (req, res) => {
+  app.get('/api/rooms', roomDataLimiter, (req, res) => {
     let cookie = req.cookies.sat;
+    doNotCache(res);
     if (!auth.validToken(cookie)) {
       res.status(403).json(
         { success: false, reason: 'Invalid or not present token' });
@@ -84,6 +92,7 @@ function setUpRoutes(app, rooms, previousData) {
 
   app.get('/api/rooms/:name', roomDataLimiter, (req, res) => {
     let cookie = req.cookies.sat;
+    doNotCache(res);
     if (!auth.validToken(cookie)) {
       res.status(403).json(
         { success: false, reason: 'Invalid or not present token' });
@@ -110,8 +119,9 @@ function setUpRoutes(app, rooms, previousData) {
   });
 
 
-  app.get('/room/all', (req, res) => {
+  app.get('/room/all', roomDataLimiter, (req, res) => {
     let cookie = req.cookies.sat;
+    doNotCache(res);
     if (!auth.validToken(cookie)) {
       res.sendStatus(401);
       return;
@@ -129,11 +139,13 @@ function setUpRoutes(app, rooms, previousData) {
   app.get('/room/new', (req, res) => {
     let roomName = randomRoomString();
     rooms[roomName] = new Room(roomName);
+    doNotCache(res);
     res.redirect(`/room/in/${roomName}`);
   });
 
   app.get('/room/in/:w1', (req, res) => {
     let room = req.params.w1;
+    doNotCache(res);
     if (!rooms[room]) {
       res.status(404).sendFile(__dirname + '/public/error.html');
     } else {
