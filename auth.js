@@ -1,5 +1,6 @@
 const crypto = require('crypto');
 const uuid = require('uuid/v4');
+require('dotenv').config();
 
 const PASSPHRASE = process.env.PASSPHRASE;
 

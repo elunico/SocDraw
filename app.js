@@ -64,7 +64,7 @@ app.use(cookieParser());
 app.use(analytics());
 
 // heroku port and local port
-const PORT = process.env.PORT || 8000;
+const PORT = process.env.PORT || 9000;
 
 // start server
 let listener = server.listen(PORT);
