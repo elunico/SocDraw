@@ -12,8 +12,8 @@ class Room {
       deleteTimer: null,
       clients: [],
       links: {
-        relative: `/api/rooms/${this.name}`,
-        absolute: `http://localhost:8000/api/rooms/${this.name}`
+        api: `/api/rooms/${this.name}`,
+        endpoint: `/room/in/${this.name}`
       }
     };
 

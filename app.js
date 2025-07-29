@@ -1,5 +1,6 @@
 const express = require('express');
 const app = express();
+const robotify = require('../utilities/robotify.js')
 const server = require('http').Server(app);
 const io = require('socket.io')(server);
 const cookieParser = require('cookie-parser');
@@ -56,6 +57,9 @@ setInterval(() => {
 
 // handle api requests and responses
 app.use(express.json());
+
+// for robots.txt response
+robotify(app);
 
 // for authenticating
 app.use(cookieParser());
