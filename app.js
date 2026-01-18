@@ -16,6 +16,7 @@ let previousData = {};
 let rooms = {};
 
 const COMPACTING_INTERVAL_MILLIS = Number(process.env.COMPACTING_INTERVAL_MILLIS) || 2000;
+const ROOM_KEEP_SECONDS = Number(process.env.ROOM_KEEP_SECONDS) || 15;
 
 console.log('[+] Beginning path compacting interval')
 setInterval(() => {
@@ -54,6 +55,27 @@ setInterval(() => {
     }
   }
 }, COMPACTING_INTERVAL_MILLIS);
+
+
+/**
+ * Check for empty rooms and delete them after a period of inactivity
+ * This is done to prevent memory leaks and keep the server clean.
+ * This can happen if a client connects but an error occurs in client-side code
+ * and the client never sends 'disconnect' from the socket.
+ */
+setInterval(() => {
+  for (let roomKey of Object.keys(rooms)) {
+    let room = rooms[roomKey];
+    if (room.clients.length == 0 && !room.willBeDeleted()) {
+      room.deleteTimer = setTimeout(() => {
+        console.log(`[*] Deleting room ${roomKey} due to inactivity`);
+        delete rooms[roomKey];
+        delete previousData[roomKey];
+      }, 1000 * ROOM_KEEP_SECONDS);
+      console.log(`[*] Room ${roomKey} is empty, will be deleted in 15 seconds if no clients join`);
+    }
+  }
+}, COMPACTING_INTERVAL_MILLIS * 10);
 
 // handle api requests and responses
 app.use(express.json());
